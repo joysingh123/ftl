@@ -50,7 +50,7 @@ class LookupUserContactEmail extends Command {
         $sheet_info = MasterUserSheet::where('Status', 'Under Processing')->limit(1)->get();
         if ($sheet_info->count() > 0) {
             $sheet_id = $sheet_info->first()->ID;
-            $mapping_data = MappingUserContacts::where('Sheet_Id', $sheet_id)->get();
+            $mapping_data = MappingUserContacts::where('Sheet_Id', $sheet_id)->where('status','not processed')->get();
             if ($mapping_data->count() > 0) {
                 echo "Data Found For Processing: " . $mapping_data->count();
                 foreach ($mapping_data AS $md) {
@@ -77,6 +77,7 @@ class LookupUserContactEmail extends Command {
                         }
                     }
                 }
+            }else{
                 MasterUserSheet::where('ID', $sheet_id)->update(['Status'=>'Completed']);
             }
         }
