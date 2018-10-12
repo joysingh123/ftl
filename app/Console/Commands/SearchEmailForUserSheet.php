@@ -59,7 +59,10 @@ class SearchEmailForUserSheet extends Command {
                 $data_for_email_processing = MasterUserContact::where('sheet_id', $sheet_id)->where('email_status', 'domain found')->get();
                 $sheet_name = $sheet->Sheet_Name;
                 echo "For Domain Found : => $sheet_id -- $sheet_name -- " . $data_for_email_processing->count();
-
+                $data_for_email_processing_count = $data_for_email_processing->count();
+                $found_in_available_email = 0;
+                $found_in_matched_email = 0;
+                $go_to_contact_count = 0;
                 // serach in available email and matchedcontacts
                 UtilDebug::debug("start email search processing");
                 if ($data_for_email_processing->count() > 0) {
@@ -71,11 +74,23 @@ class SearchEmailForUserSheet extends Command {
                         $available_email = AvailableEmail::where('first_name', $first_name)->where('last_name', $last_name)->where('company_domain', $company_domain)->where('job_title', $title)->get();
                         $update_data = false;
                         if ($available_email->count() > 0) {
+                            $found_in_available_email ++;
                             $update_data = MasterUserContact::where('ID', $dep->ID)->update(['Contact_Email' => $available_email->first()->email, 'Email_Status' => 'valid', 'Validatation_Date' => $available_email->first()->created_at]);
+                            if($update_data){
+                                $found_in_available_email ++ ;
+                            }
                         } else {
                             $matched_contacts = MatchedContact::where('first_name', $first_name)->where('last_name', $last_name)->where('domain', $company_domain)->where('job_title', $title)->get();
                             if ($matched_contacts->count() > 0) {
-                                $update_data = MasterUserContact::where('ID', $dep->ID)->update(['Contact_Email' => $matched_contacts->first()->email, 'Email_Status' => $matched_contacts->first()->email_status, 'Validatation_Date' => $matched_contacts->first()->email_validation_date]);
+                                $matched_email = $matched_contacts->first()->email;
+                                $matched_email_status = $matched_contacts->first()->email_status;
+                                $matched_email_validation_date = $matched_contacts->first()->email_validation_date;
+                                if(!empty($matched_email) && !empty($matched_email_status) && !empty($matched_email_validation_date)){
+                                    $update_data = MasterUserContact::where('ID', $dep->ID)->update(['Contact_Email' => $matched_contacts->first()->email, 'Email_Status' => $matched_contacts->first()->email_status, 'Validatation_Date' => $matched_contacts->first()->email_validation_date]);
+                                    if($update_data){
+                                        $found_in_matched_email ++ ;
+                                    }
+                                }
                             } else {
                                 $full_name = trim($dep->Contact_Full_Name);
                                 $job_title = trim($dep->Job_Title);
@@ -110,6 +125,7 @@ class SearchEmailForUserSheet extends Command {
                                                 "process_for_contact_match" => $process_for_contact_match,
                                     ]);
                                     if ($contact) {
+                                        $go_to_contact_count ++;
                                         $exist_in_map = MappingUserContacts::where('User_Contact_Id', $dep->ID)->where('Contacts_Id', $contact->id)->count();
                                         if ($exist_in_map <= 0) {
                                             $mapping_contact = MappingUserContacts::create(['Sheet_Id' => $sheet_id, 'User_Contact_Id' => $dep->ID, 'Contacts_Id' => $contact->id, 'Matched_Id' => 0]);
@@ -123,6 +139,7 @@ class SearchEmailForUserSheet extends Command {
                         }
                     }
                 }
+                echo "Domain Found: $data_for_email_processing_count -- Available Email: $found_in_available_email -- Matched: $found_in_matched_email -- Go To Contact: $go_to_contact_count";
                 UtilDebug::debug("end email search processing");
             }
         } else {
