@@ -67,6 +67,13 @@ class LookupUserContactEmail extends Command {
                             if ($master_user_contacts) {
                                 MappingUserContacts::where('ID', $mapping_id)->update(['Status' => 'processed']);
                             }
+                        }else if($matched_email_status == 'invalid' || $matched_email_status == 'bounce' || $matched_email_status == 'unrecognized'){
+                            $master_user_contacts = MasterUserContact::where('ID', $user_contact_id)->update(["Email_Status" => $matched_email_status, "Validatation_Date" => $matched_email_validation_date]);
+                            if ($master_user_contacts) {
+                                MappingUserContacts::where('ID', $mapping_id)->update(['Status' => 'processed']);
+                            }
+                        }else{
+                            
                         }
                     }
                 }

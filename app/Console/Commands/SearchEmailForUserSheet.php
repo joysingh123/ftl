@@ -87,12 +87,16 @@ class SearchEmailForUserSheet extends Command {
                                 $matched_email_status = $matched_contacts->first()->email_status;
                                 $matched_email_validation_date = $matched_contacts->first()->email_validation_date;
                                 if(!empty($matched_email) && !empty($matched_email_status) && !empty($matched_email_validation_date)){
-                                    $update_data = MasterUserContact::where('ID', $dep->ID)->update(['Contact_Email' => $matched_contacts->first()->email, 'Email_Status' => $matched_contacts->first()->email_status, 'Validatation_Date' => $matched_contacts->first()->email_validation_date]);
+                                    $update_data = MasterUserContact::where('ID', $dep->ID)->update(['Contact_Email' => $matched_email, 'Email_Status' => $matched_email_status, 'Validatation_Date' => $matched_email_validation_date]);
+                                    if($update_data){
+                                        $found_in_matched_email ++ ;
+                                    }
+                                }else if($matched_email_status == 'invalid' || $matched_email_status == 'bounce' || $matched_email_status == 'unrecognized'){
+                                    $update_data = MasterUserContact::where('ID', $dep->ID)->update(['Email_Status' => $matched_email_status, 'Validatation_Date' => $matched_email_validation_date]);
                                     if($update_data){
                                         $found_in_matched_email ++ ;
                                     }
                                 }else{
-                                    echo $matched_contacts;
                                     $exist_in_match_but_no_email ++;
                                 }
                             } else {
