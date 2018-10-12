@@ -99,7 +99,7 @@ class SearchEmailForUserSheet extends Command {
                                 }else{
                                     $exist_in_match_but_no_email ++;
                                     $matched_contact_id = $matched_contacts->first()->id;
-                                    Emails::where('matched_contact_id',$matched_contact_id)->update(["status"=>"success"]);
+                                    Emails::where('matched_contact_id',$matched_contact_id)->where('status','pending')->update(["status"=>"success"]);
                                 }
                             } else {
                                 $full_name = trim($dep->Contact_Full_Name);
