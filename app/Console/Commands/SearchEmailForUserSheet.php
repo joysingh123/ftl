@@ -11,7 +11,7 @@ use App\MappingUserContacts;
 use App\AvailableEmail;
 use App\MatchedContact;
 use App\Contacts;
-
+use App\Emails;
 class SearchEmailForUserSheet extends Command {
 
     /**
@@ -98,6 +98,8 @@ class SearchEmailForUserSheet extends Command {
                                     }
                                 }else{
                                     $exist_in_match_but_no_email ++;
+                                    $matched_contact_id = $matched_contacts->first()->id;
+                                    Emails::where('matched_contact_id',$matched_contact_id)->update(["status"=>"success"]);
                                 }
                             } else {
                                 $full_name = trim($dep->Contact_Full_Name);
@@ -147,9 +149,9 @@ class SearchEmailForUserSheet extends Command {
                         }
                     }
                 }
-                if($data_for_email_processing_count  == $found_in_matched_email + $exist_in_match_but_no_email){
-                    MasterUserSheet::where('ID', $sheet_id)->update(['Status'=>'Completed']);
-                }
+//                if($data_for_email_processing_count  == $found_in_matched_email + $exist_in_match_but_no_email){
+//                    MasterUserSheet::where('ID', $sheet_id)->update(['Status'=>'Completed']);
+//                }
                 echo "Domain Found: $data_for_email_processing_count -- Available Email: $found_in_available_email -- Matched: $found_in_matched_email -- Go To Contact: $go_to_contact_count -- Exist In Match But No Email: $exist_in_match_but_no_email";
                 UtilDebug::debug("end email search processing");
             }
