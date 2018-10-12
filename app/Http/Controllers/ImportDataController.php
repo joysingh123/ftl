@@ -18,7 +18,7 @@ class ImportDataController extends Controller {
         $user_id = Auth::id();
         $master_user_sheet_data = MasterUserSheet::where('User_ID', $user_id)->orderBY('created_at', 'DESC')->get();
         $hide_download = false;
-        $data = MasterUserSheet::where('User_ID', $user_id)->where('Status', 'Under Processing')->count();
+        $data = MasterUserSheet::where('User_ID', $user_id)->where('Status', '!=','Completed')->count();
         if ($data > 0) {
             $hide_download = true;
         }
