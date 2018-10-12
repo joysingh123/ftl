@@ -143,7 +143,7 @@ class SearchEmailForUserSheet extends Command {
                         }
                     }
                 }
-                echo "Domain Found: $data_for_email_processing_count -- Available Email: $found_in_available_email -- Matched: $found_in_matched_email -- Go To Contact: $go_to_contact_count -- Exist In Match But No Email: $exist_in_match_but_not_email";
+                echo "Domain Found: $data_for_email_processing_count -- Available Email: $found_in_available_email -- Matched: $found_in_matched_email -- Go To Contact: $go_to_contact_count -- Exist In Match But No Email: $exist_in_match_but_no_email";
                 UtilDebug::debug("end email search processing");
             }
         } else {
