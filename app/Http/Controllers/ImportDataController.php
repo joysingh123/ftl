@@ -49,7 +49,6 @@ class ImportDataController extends Controller {
                         $total_count = $data->count();
                         $master_user_sheet = MasterUserSheet::create(["sheet_name" => $filename, "user_id" => Auth::id(), "total_count" => $total_count,"sheet_tag" => $sheet_tag, "status" => "Contact Uploading"]);
                         $sheet_id = $master_user_sheet->id;
-                        $sheet_id = 0;
                         if ($sheet_id > 0) {
                             foreach ($data as $key => $value) {
                                 $full_name = trim($value->full_name);
