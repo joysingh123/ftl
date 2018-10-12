@@ -63,6 +63,7 @@ class SearchEmailForUserSheet extends Command {
                 $found_in_available_email = 0;
                 $found_in_matched_email = 0;
                 $go_to_contact_count = 0;
+                $exist_in_match_but_no_email = 0;
                 // serach in available email and matchedcontacts
                 UtilDebug::debug("start email search processing");
                 if ($data_for_email_processing->count() > 0) {
@@ -90,6 +91,9 @@ class SearchEmailForUserSheet extends Command {
                                     if($update_data){
                                         $found_in_matched_email ++ ;
                                     }
+                                }else{
+                                    echo $matched_contacts;
+                                    $exist_in_match_but_no_email ++;
                                 }
                             } else {
                                 $full_name = trim($dep->Contact_Full_Name);
@@ -139,7 +143,7 @@ class SearchEmailForUserSheet extends Command {
                         }
                     }
                 }
-                echo "Domain Found: $data_for_email_processing_count -- Available Email: $found_in_available_email -- Matched: $found_in_matched_email -- Go To Contact: $go_to_contact_count";
+                echo "Domain Found: $data_for_email_processing_count -- Available Email: $found_in_available_email -- Matched: $found_in_matched_email -- Go To Contact: $go_to_contact_count -- Exist In Match But No Email: $exist_in_match_but_not_email";
                 UtilDebug::debug("end email search processing");
             }
         } else {
