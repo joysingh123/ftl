@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\MasterUserSheet;
 use App\Helpers\UtilDebug;
+use App\Helpers\UtilString;
 use App\MasterUserContact;
 use App\MappingUserContacts;
 use App\AvailableEmail;
@@ -57,8 +58,8 @@ class SearchEmailForUserSheet extends Command {
                 MasterUserSheet::where("ID", $sheet_id)->update(['Status' => 'Under Processing']);
                 $data_for_email_processing = MasterUserContact::where('sheet_id', $sheet_id)->where('email_status', 'domain found')->get();
                 $sheet_name = $sheet->Sheet_Name;
-                echo "For Domain Found : => $sheet_id -- $sheet_name -- ".$data_for_email_processing->count();
-                
+                echo "For Domain Found : => $sheet_id -- $sheet_name -- " . $data_for_email_processing->count();
+
                 // serach in available email and matchedcontacts
                 UtilDebug::debug("start email search processing");
                 if ($data_for_email_processing->count() > 0) {
@@ -75,7 +76,7 @@ class SearchEmailForUserSheet extends Command {
                             $matched_contacts = MatchedContact::where('first_name', $first_name)->where('last_name', $last_name)->where('domain', $company_domain)->where('job_title', $title)->get();
                             if ($matched_contacts->count() > 0) {
                                 $update_data = MasterUserContact::where('ID', $dep->ID)->update(['Contact_Email' => $matched_contacts->first()->email, 'Email_Status' => $matched_contacts->first()->email_status, 'Validatation_Date' => $matched_contacts->first()->email_validation_date]);
-                            }else{
+                            } else {
                                 $full_name = trim($dep->Contact_Full_Name);
                                 $job_title = trim($dep->Job_Title);
                                 $company_name = trim($dep->Company_Name);
@@ -91,26 +92,30 @@ class SearchEmailForUserSheet extends Command {
                                 $location = (empty($dep->Location)) ? "" : $dep->Location;
                                 $status = "invalid";
                                 $process_for_contact_match = "not processed";
-                                $contact = Contacts::create([
-                                    "user_id" => $user_id,
-                                    "linkedin_id" => $linkedin_id,
-                                    "full_name" => $full_name,
-                                    "first_name" => $first_name,
-                                    "last_name" => $last_name,
-                                    "company_name" => $company_name,
-                                    "job_title" => $job_title,
-                                    "experience" => $experience,
-                                    "profile_link" => $profile_link,
-                                    "location" => $location,
-                                    "status" => $status,
-                                    "process_for_contact_match" => $process_for_contact_match,
-                                ]);
-                                if ($contact) {
-                                    $exist_in_map = MappingUserContacts::where('User_Contact_Id', $dep->ID)->where('Contacts_Id', $contact->id)->count();
-                                    if ($exist_in_map <= 0) {
-                                        $mapping_contact = MappingUserContacts::create(['Sheet_Id'=>$sheet_id,'User_Contact_Id' => $dep->ID, 'Contacts_Id' => $contact->id, 'Matched_Id' => 0]);
-                                        if ($mapping_contact) {
-                                            MasterUserContact::where('ID', $dep->ID)->update(['Email_Status' => 'under processing']);
+                                if (UtilString::is_empty_string($full_name) && UtilString::is_empty_string($first_name) && UtilString::is_empty_string($last_name)) {
+                                    MasterUserContact::where('ID', $dep->ID)->update(['Email_Status' => 'unknown']);
+                                } else {
+                                    $contact = Contacts::create([
+                                                "user_id" => $user_id,
+                                                "linkedin_id" => $linkedin_id,
+                                                "full_name" => $full_name,
+                                                "first_name" => $first_name,
+                                                "last_name" => $last_name,
+                                                "company_name" => $company_name,
+                                                "job_title" => $job_title,
+                                                "experience" => $experience,
+                                                "profile_link" => $profile_link,
+                                                "location" => $location,
+                                                "status" => $status,
+                                                "process_for_contact_match" => $process_for_contact_match,
+                                    ]);
+                                    if ($contact) {
+                                        $exist_in_map = MappingUserContacts::where('User_Contact_Id', $dep->ID)->where('Contacts_Id', $contact->id)->count();
+                                        if ($exist_in_map <= 0) {
+                                            $mapping_contact = MappingUserContacts::create(['Sheet_Id' => $sheet_id, 'User_Contact_Id' => $dep->ID, 'Contacts_Id' => $contact->id, 'Matched_Id' => 0]);
+                                            if ($mapping_contact) {
+                                                MasterUserContact::where('ID', $dep->ID)->update(['Email_Status' => 'under processing']);
+                                            }
                                         }
                                     }
                                 }
@@ -118,7 +123,7 @@ class SearchEmailForUserSheet extends Command {
                         }
                     }
                 }
-            UtilDebug::debug("end email search processing");   
+                UtilDebug::debug("end email search processing");
             }
         } else {
             $response['status'] = "fail";
