@@ -256,7 +256,30 @@ class ImportDataController extends Controller {
                                 }
                             }
                         }
+                        if (!empty($insert)) {
+                            $insert_chunk = array_chunk($insert, 100);
+                            foreach ($insert_chunk AS $ic) {
+                                $insertData = DB::table('companies_with_domain')->insert($ic);
+                            }
+                            if ($insertData) {
+                                Session::flash('success', 'Your Data has successfully imported');
+                            } else {
+                                Session::flash('error', 'Error inserting the data..');
+                                return back();
+                            }
+                        }
                     }
+                    $stats_data = array(
+                        "inserted" => $inserted,
+                        "duplicate_in_sheet" => $duplicate_in_sheet,
+                        "already_exist_in_db" => $already_exist_in_db,
+                        "domain_not_exist" => $domain_not_exist,
+                        "junk_count" => $junk_count,
+                        "domain_not_found" => $domain_not_found,
+                        "junk_data_array" => $junk_data_array
+                    );
+                    Session::flash('stats_data', $stats_data);
+                    return back();
                 } else {
                     Session::flash('error', "The Sheet Header contain wrong column name");
                     return back();
