@@ -68,11 +68,12 @@ class SearchEmailForUserSheet extends Command {
                 UtilDebug::debug("start email search processing");
                 if ($data_for_email_processing->count() > 0) {
                     foreach ($data_for_email_processing AS $dep) {
+                        echo "dep:= $dep";
                         $first_name = $dep->First_Name;
                         $last_name = $dep->Last_Name;
                         $company_domain = $dep->Company_Domain;
                         $title = $dep->Job_Title;
-                        $available_email = AvailableEmail::where('first_name', $first_name)->where('last_name', $last_name)->where('company_domain', $company_domain)->where('job_title', $title)->get();
+                        $available_email = AvailableEmail::where('first_name', $first_name)->where('last_name', $last_name)->where('company_domain', $company_domain)->get();
                         $update_data = false;
                         if ($available_email->count() > 0) {
                             $found_in_available_email ++;
@@ -81,7 +82,8 @@ class SearchEmailForUserSheet extends Command {
                                 $found_in_available_email ++ ;
                             }
                         } else {
-                            $matched_contacts = MatchedContact::where('first_name', $first_name)->where('last_name', $last_name)->where('domain', $company_domain)->where('job_title', $title)->get();
+                            $matched_contacts = MatchedContact::where('first_name', $first_name)->where('last_name', $last_name)->where('domain', $company_domain)->get();
+                            echo "matched:  : $matched_contacts";
                             if ($matched_contacts->count() > 0) {
                                 $matched_email = $matched_contacts->first()->email;
                                 $matched_email_status = $matched_contacts->first()->email_status;
