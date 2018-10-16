@@ -11,10 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
+Route::get('/','Auth\LoginController@showLoginForm');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
@@ -23,3 +20,5 @@ Route::get('exportcontactdata/{id}',"ExportController@export")->middleware('auth
 Route::get('importcontactdata',"ImportDataController@importContactView")->middleware('auth');
 Route::post('importcontactdata',"ImportDataController@importContactData")->name('contactimport')->middleware('auth');
 
+Route::get('importcompaniesdata',"ImportDataController@importCompanyView")->middleware('auth');
+Route::post('importcompaniesdata',"ImportDataController@importCompanyData")->name('companyimport')->middleware('auth');
