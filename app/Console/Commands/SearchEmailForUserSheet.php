@@ -119,7 +119,7 @@ class SearchEmailForUserSheet extends Command {
                                 $location = (empty($dep->Location)) ? "" : $dep->Location;
                                 $status = "valid";
                                 $process_for_contact_match = "not processed";
-                                if (UtilString::is_empty_string($full_name) && UtilString::is_empty_string($first_name) && UtilString::is_empty_string($last_name)) {
+                                if (UtilString::is_empty_string($first_name) && UtilString::is_empty_string($last_name)) {
                                     MasterUserContact::where('ID', $dep->ID)->update(['Email_Status' => 'unknown']);
                                 } else {
                                     $contact = Contacts::create([

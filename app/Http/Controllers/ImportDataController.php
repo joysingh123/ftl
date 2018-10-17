@@ -65,7 +65,7 @@ class ImportDataController extends Controller {
                                 $email_status = "contact added";
 
                                 //logic for first name and last name
-                                if ($first_name == "" && $last_name == "") {
+                                if ($first_name == "" || $last_name == "") {
                                     $explode_name = explode(" ", $full_name);
                                     if (count($explode_name) == 1) {
                                         $first_name = $explode_name[0];
@@ -87,7 +87,7 @@ class ImportDataController extends Controller {
                                     $email_status = "company not found";
                                 }
 
-                                if (UtilString::is_empty_string($first_name) && UtilString::is_empty_string($full_name)) {
+                                if (UtilString::is_empty_string($first_name) && UtilString::is_empty_string($last_name)) {
                                     $email_status = "unknown";
                                 }
 
