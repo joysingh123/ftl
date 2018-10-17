@@ -52,6 +52,7 @@ class ImportDataController extends Controller {
                         $master_user_sheet = MasterUserSheet::create(["sheet_name" => $filename, "user_id" => Auth::id(), "total_count" => $total_count, "sheet_tag" => $sheet_tag, "status" => "Contact Uploading"]);
                         $sheet_id = $master_user_sheet->id;
                         if ($sheet_id > 0) {
+                            $duplicate_array = array();
                             foreach ($data as $key => $value) {
                                 $full_name = trim($value->full_name);
                                 $first_name = trim($value->first_name);
@@ -86,11 +87,16 @@ class ImportDataController extends Controller {
                                 } else {
                                     $email_status = "company not found";
                                 }
-
+                                
+                                $exsting_string = "$first_name$last_name$company_domain";
+                                if(in_array($exsting_string,$duplicate_array)){
+                                    $email_status = "duplicate";
+                                }else{
+                                    $duplicate_array[] = $exsting_string;
+                                }
                                 if (UtilString::is_empty_string($first_name) && UtilString::is_empty_string($last_name)) {
                                     $email_status = "unknown";
                                 }
-
                                 $insert_array = [
                                     'user_id' => Auth::id(),
                                     'sheet_id' => $sheet_id,
