@@ -40,15 +40,15 @@
     <form action="{{ route('contactimport') }}" method="POST" enctype="multipart/form-data">
         {{ csrf_field() }}
         Choose your xls File : [
-                    Full Name,
-                    First Name,
-                    Last Name,
-                    Title,
-                    Company, 
-                    Experience, 
-                    Location,
-                    Company Url
-                    ] <input type="file" name="file" class="form-control">
+        Full Name,
+        First Name,
+        Last Name,
+        Title,
+        Company, 
+        Experience, 
+        Location,
+        Company Url
+        ] <input type="file" name="file" class="form-control">
         Tag : <input type="text" name="sheet_tag" class="form-control">
 
         <input type="submit" {{($hide_download) ? 'disabled' : '' }} class="btn btn-primary btn-lg" style="margin-top: 3%">
@@ -77,36 +77,38 @@
     </div>
     @endif
     @if($sheet_data->count() > 0)
-    <br>
-    <div class="container">
-        <h2>Sheet Status</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Sheet Name</th>
-                    <th>Total In Sheet</th>
-                    <th>Status</th>
-                    <th>Download</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($sheet_data AS $k=>$sh)
-                <tr>
-                    <td>{{$k+1}}</td>
-                    <td>{{$sh->Sheet_Name}}</td>
-                    <td>{{$sh->Total_Count}}</td>
-                    <td>{{$sh->Status}}</td>
-                    @if($sh->Status == 'Completed')
-                    <td><a href="/exportcontactdata/{{$sh->ID}}">Download</a></td>
-                    @else
-                    <td>Processing</td>
-                    @endif
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-    @endif
+<br>
+<div class="container">
+    <h2>Sheet Status</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Sheet Name</th>
+                <th>Total In Sheet</th>
+                <th>Estimated Completion Time</th>
+                <th>Status</th>
+                <th>Download</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($sheet_data AS $k=>$sh)
+            <tr>
+                <td>{{$k+1}}</td>
+                <td>{{$sh->Sheet_Name}}</td>
+                <td>{{$sh->Total_Count}}</td>
+                <td><?php echo  \App\Helpers\UtilString::estimated_time($sh->Total_Count, $estimated_time); ?></td>
+                <td>{{$sh->Status}}</td>
+                @if($sh->Status == 'Completed')
+                <td><a href="/exportcontactdata/{{$sh->ID}}">Download</a></td>
+                @else
+                <td>Processing</td>
+                @endif
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+@endif
 </div>
 @endsection

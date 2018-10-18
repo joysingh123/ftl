@@ -127,6 +127,19 @@ class UtilString {
  
         return $result;
     }
+    public static function estimated_time($total_count,$estimated_time){
+        $time = $total_count/$estimated_time;
+        $time_stirng = "";
+        if($time < 30){
+            $time_stirng = "30 Minutes";
+        }else{
+            $time_stirng = round($time)." Minutes"; 
+        }
+        if($time >= 60){
+            $time_stirng = round($time/60,PHP_ROUND_HALF_DOWN)." Hours";
+        }
+        return $time_stirng;
+    }
 }
 ?>
 

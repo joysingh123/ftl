@@ -22,7 +22,37 @@ class ImportDataController extends Controller {
         if ($data->count() > 0) {
             $hide_download = true;
         }
-        return view('importusercontact')->with('current_sheet',$data)->with('sheet_data', $master_user_sheet_data)->with('hide_download', $hide_download);
+        $estimated_time = DB::table('master_user_sheets')
+                    ->select(DB::raw("avg((total_count)/(timestampdiff(MINUTE, created_at,updated_at))) AS estimated_time"))
+                     ->get();
+        $estimated_time = $estimated_time->first()->estimated_time;
+        $estimated_time = round($estimated_time);
+        if($data->count() > 0){
+            $data_progress = array();
+            $data_progress['Contact Uploading'] = 'disabled';
+            $data_progress['Contact Added'] = 'disabled';
+            $data_progress['Under Processing'] = 'disabled';
+            $data_progress['Completed'] = 'disabled';
+            if($data->first()->Status == 'Contact Uploading'){
+                $data_progress['Contact Uploading'] = 'active';
+            }
+            if($data->first()->Status == 'Contact Added'){
+                $data_progress['Contact Uploading'] = 'completed';
+                $data_progress['Contact Added'] = 'active';
+            }
+            if($data->first()->Status == 'Under Processing'){
+                $data_progress['Contact Uploading'] = 'completed';
+                $data_progress['Contact Added'] = 'completed';
+                $data_progress['Under Processing'] = 'active';
+            }
+            if($data->first()->Status == 'Completed'){
+                $data_progress['Contact Uploading'] = 'completed';
+                $data_progress['Contact Added'] = 'completed';
+                $data_progress['Under Processing'] = 'completed';
+                $data_progress['Completed'] = 'completed';
+            }
+        }
+        return view('importusercontact')->with('estimated_time',$estimated_time)->with('sheet_data', $master_user_sheet_data)->with('hide_download', $hide_download);
     }
 
     public function importContactData(Request $request) {
