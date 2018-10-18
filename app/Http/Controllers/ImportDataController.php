@@ -166,9 +166,7 @@ class ImportDataController extends Controller {
             $extension = File::extension($request->file->getClientOriginalName());
             if ($extension == "xlsx" || $extension == "xls") {
                 $path = $request->file->getRealPath();
-                $data = Excel::load($path, function($reader) {
-                            
-                        })->get();
+                $data = Excel::load($path, function($reader) {})->get();
                 $header = $data->getHeading();
                 if (in_array('linkedin_id', $header) && in_array('linkedin_url', $header) && in_array('company_domain', $header) && in_array('company_name', $header) && in_array('company_type', $header) && in_array('industry', $header) && in_array('city', $header) && in_array('employee_size', $header)) {
                     if (!empty($data) && $data->count()) {
@@ -187,8 +185,8 @@ class ImportDataController extends Controller {
                             } else {
                                 $duplicate[] = $value;
                                 if (!UtilString::contains($value, "\u")) {
-                                    if ((isset($value->company_domain) && isset($value->linkedin_id)) && (UtilString::contains($value->company_domain, ".") && $value->linkedin_id > 0)) {
-                                        $linkedin_id = ($value->linkedin_id != "") ? $value->linkedin_id : 0;
+                                    if ((isset($value->company_domain) && isset($value->linkedin_id)) && UtilString::contains($value->company_domain, ".")) {
+                                        $linkedin_id = ($value->linkedin_id != "") ? UtilString::get_company_id_from_url($value->linkedin_id) : 0;
                                         $linkedin_url = ($value->linkedin_url != "") ? $value->linkedin_url : "";
                                         $company_domain = ($value->company_domain != "") ? $value->company_domain : "";
                                         $company_name = ($value->company_name != "") ? $value->company_name : "";
