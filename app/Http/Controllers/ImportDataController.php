@@ -304,6 +304,26 @@ class ImportDataController extends Controller {
                                 $insertData = DB::table('companies_with_domain')->insert($ic);
                             }
                             if ($insertData) {
+                                CompaniesWithDomain::where('employee_size','0-1 employees')->update(['employee_size'=>'1 to 10']);
+                                CompaniesWithDomain::where('employee_size','1,001-5,000 employees')->update(['employee_size'=>'1001 to 5000']);
+                                CompaniesWithDomain::where('employee_size','1-10 employees')->update(['employee_size'=>'1 to 10']);
+                                CompaniesWithDomain::where('employee_size','10')->update(['employee_size'=>'1 to 10']);
+                                CompaniesWithDomain::where('employee_size','10,001+ employees')->update(['employee_size'=>'10000 above']);
+                                CompaniesWithDomain::where('employee_size','10001 + Employees')->update(['employee_size'=>'10000 above']);
+                                CompaniesWithDomain::where('employee_size','1001-5000 employees')->update(['employee_size'=>'1001 to 5000']);
+                                CompaniesWithDomain::where('employee_size','11-50 employees')->update(['employee_size'=>'11 to 50']);
+                                CompaniesWithDomain::where('employee_size','2-10 employees')->update(['employee_size'=>'1 to 10']);
+                                CompaniesWithDomain::where('employee_size','201-500 employees')->update(['employee_size'=>'201 to 500']);
+                                CompaniesWithDomain::where('employee_size','5,001-10,000 employees')->update(['employee_size'=>'5001 to 10000']);
+                                CompaniesWithDomain::where('employee_size','5001 - 10000 employees')->update(['employee_size'=>'5001 to 10000']);
+                                CompaniesWithDomain::where('employee_size','5001-10,000 employees')->update(['employee_size'=>'5001 to 10000']);
+                                CompaniesWithDomain::where('employee_size','5001-10000 employees')->update(['employee_size'=>'5001 to 10000']);
+                                CompaniesWithDomain::where('employee_size','501-1,000 employees')->update(['employee_size'=>'501 to 1000']);
+                                CompaniesWithDomain::where('employee_size','501-1000 employees')->update(['employee_size'=>'501 to 1000']);
+                                CompaniesWithDomain::where('employee_size','51-200 employees')->update(['employee_size'=>'51 to 200']);
+                                CompaniesWithDomain::where('employee_size','Myself Only')->update(['employee_size'=>'1 to 10']);
+                                CompaniesWithDomain::where('employee_size','NA')->update(['employee_size'=>'Invalid']);
+                                DB::statement("update contacts A inner join companies_with_domain B on A.linkedin_id = B.linkedin_id set A.process_for_contact_match = 'not processed' where A.process_for_contact_match = 'company not found'");
                                 Session::flash('success', 'Your Data has successfully imported');
                             } else {
                                 Session::flash('error', 'Error inserting the data..');
