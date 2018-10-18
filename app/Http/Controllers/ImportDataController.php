@@ -87,11 +87,11 @@ class ImportDataController extends Controller {
                                 } else {
                                     $email_status = "company not found";
                                 }
-                                
+
                                 $exsting_string = "$first_name$last_name$company_domain";
-                                if(in_array($exsting_string,$duplicate_array)){
+                                if (in_array($exsting_string, $duplicate_array)) {
                                     $email_status = "duplicate";
-                                }else{
+                                } else {
                                     $duplicate_array[] = $exsting_string;
                                 }
                                 if (UtilString::is_empty_string($first_name) && UtilString::is_empty_string($last_name)) {
@@ -166,7 +166,9 @@ class ImportDataController extends Controller {
             $extension = File::extension($request->file->getClientOriginalName());
             if ($extension == "xlsx" || $extension == "xls") {
                 $path = $request->file->getRealPath();
-                $data = Excel::load($path, function($reader) {})->get();
+                $data = Excel::load($path, function($reader) {
+                            
+                        })->get();
                 $header = $data->getHeading();
                 if (in_array('linkedin_id', $header) && in_array('linkedin_url', $header) && in_array('company_domain', $header) && in_array('company_name', $header) && in_array('company_type', $header) && in_array('industry', $header) && in_array('city', $header) && in_array('employee_size', $header)) {
                     if (!empty($data) && $data->count()) {
@@ -180,55 +182,74 @@ class ImportDataController extends Controller {
                         $insert = array();
                         $duplicate = array();
                         foreach ($data as $key => $value) {
-                            if (in_array($value, $duplicate)) {
-                                $duplicate_in_sheet ++;
+                            if (UtilString::is_empty_string($value->company_domain) && UtilString::is_empty_string($value->linkedin_id) && UtilString::is_empty_string($value->company_name)) {
+                                
                             } else {
-                                $duplicate[] = $value;
-                                if (!UtilString::contains($value, "\u")) {
-                                    if ((isset($value->company_domain) && isset($value->linkedin_id)) && UtilString::contains($value->company_domain, ".")) {
-                                        $linkedin_id = ($value->linkedin_id != "") ? UtilString::get_company_id_from_url($value->linkedin_id) : 0;
-                                        $linkedin_url = ($value->linkedin_url != "") ? $value->linkedin_url : "";
-                                        $company_domain = ($value->company_domain != "") ? $value->company_domain : "";
-                                        $company_name = ($value->company_name != "") ? $value->company_name : "";
-                                        $company_type = ($value->company_type != "") ? $value->company_type : "";
-                                        $employee_count_at_linkedin = ($value->employee_count_at_linkedin != "") ? (int) $value->employee_count_at_linkedin : 0;
-                                        $industry = ($value->industry != "") ? $value->industry : "";
-                                        $city = ($value->city != "") ? $value->city : "";
-                                        $postal_code = ($value->postal_code != "") ? trim($value->postal_code) : "";
-                                        $employee_size = ($value->employee_size != "") ? trim($value->employee_size) : "";
-                                        $country = ($value->country != "") ? trim($value->country) : "";
-                                        $linkedin_url = UtilString::clean_string($linkedin_url);
-                                        $company_domain = UtilString::clean_string($company_domain);
-                                        $company_domain = UtilString::get_domain_from_url($company_domain);
-                                        $company_name = UtilString::clean_string($company_name);
-                                        $industry = UtilString::clean_string($industry);
-                                        $city = UtilString::clean_string($city);
-                                        $employee_size = UtilString::clean_string($employee_size);
-                                        $country = UtilString::clean_string($country);
-                                        $contact_exist = CompaniesWithDomain::where('linkedin_id', $linkedin_id)->count();
-                                        if ($contact_exist == 0) {
-                                            $insert_array = [
-                                                'user_id' => Auth::id(),
-                                                'linkedin_id' => $linkedin_id,
-                                                'linkedin_url' => $linkedin_url,
-                                                'company_domain' => $company_domain,
-                                                'company_name' => $company_name,
-                                                'company_type' => $company_type,
-                                                'employee_count_at_linkedin' => $employee_count_at_linkedin,
-                                                'industry' => $industry,
-                                                'city' => $city,
-                                                'postal_code' => $postal_code,
-                                                'employee_size' => $employee_size,
-                                                'country' => $country
-                                            ];
-                                            $insert[] = $insert_array;
-                                            $inserted ++;
+                                if (in_array($value, $duplicate)) {
+                                    $duplicate_in_sheet ++;
+                                } else {
+                                    $duplicate[] = $value;
+                                    if (!UtilString::contains($value, "\u")) {
+                                        if ((isset($value->company_domain) && isset($value->linkedin_id)) && UtilString::contains($value->company_domain, ".")) {
+                                            $linkedin_id = ($value->linkedin_id != "") ? UtilString::get_company_id_from_url($value->linkedin_id) : 0;
+                                            $linkedin_url = ($value->linkedin_url != "") ? $value->linkedin_url : "";
+                                            $company_domain = ($value->company_domain != "") ? $value->company_domain : "";
+                                            $company_name = ($value->company_name != "") ? $value->company_name : "";
+                                            $company_type = ($value->company_type != "") ? $value->company_type : "";
+                                            $employee_count_at_linkedin = ($value->employee_count_at_linkedin != "") ? (int) $value->employee_count_at_linkedin : 0;
+                                            $industry = ($value->industry != "") ? $value->industry : "";
+                                            $city = ($value->city != "") ? $value->city : "";
+                                            $postal_code = ($value->postal_code != "") ? trim($value->postal_code) : "";
+                                            $employee_size = ($value->employee_size != "") ? trim($value->employee_size) : "";
+                                            $country = ($value->country != "") ? trim($value->country) : "";
+                                            $linkedin_url = UtilString::clean_string($linkedin_url);
+                                            $company_domain = UtilString::clean_string($company_domain);
+                                            $company_domain = UtilString::get_domain_from_url($company_domain);
+                                            $company_name = UtilString::clean_string($company_name);
+                                            $industry = UtilString::clean_string($industry);
+                                            $city = UtilString::clean_string($city);
+                                            $employee_size = UtilString::clean_string($employee_size);
+                                            $country = UtilString::clean_string($country);
+                                            $contact_exist = CompaniesWithDomain::where('linkedin_id', $linkedin_id)->count();
+                                            if ($contact_exist == 0) {
+                                                $insert_array = [
+                                                    'user_id' => Auth::id(),
+                                                    'linkedin_id' => $linkedin_id,
+                                                    'linkedin_url' => $linkedin_url,
+                                                    'company_domain' => $company_domain,
+                                                    'company_name' => $company_name,
+                                                    'company_type' => $company_type,
+                                                    'employee_count_at_linkedin' => $employee_count_at_linkedin,
+                                                    'industry' => $industry,
+                                                    'city' => $city,
+                                                    'postal_code' => $postal_code,
+                                                    'employee_size' => $employee_size,
+                                                    'country' => $country
+                                                ];
+                                                $insert[] = $insert_array;
+                                                $inserted ++;
+                                            } else {
+                                                $already_exist_in_db ++;
+                                            }
                                         } else {
-                                            $already_exist_in_db ++;
+                                            $domain_not_exist ++;
+                                            $domain_not_found[] = [
+                                                'linkedin_id' => $value->linkedin_id,
+                                                'linkedin_url' => $value->linkedin_url,
+                                                'company_domain' => $value->company_domain,
+                                                'company_name' => $value->company_name,
+                                                'company_type' => $value->company_type,
+                                                'employee_count_at_linkedin' => $value->employee_count_at_linkedin,
+                                                'industry' => $value->industry,
+                                                'city' => $value->city,
+                                                'postal_code' => $value->postal_code,
+                                                'employee_size' => $value->employee_size,
+                                                'country' => $value->country
+                                            ];
                                         }
                                     } else {
-                                        $domain_not_exist ++;
-                                        $domain_not_found[] = [
+                                        $junk_count ++;
+                                        $junk_data_array[] = [
                                             'linkedin_id' => $value->linkedin_id,
                                             'linkedin_url' => $value->linkedin_url,
                                             'company_domain' => $value->company_domain,
@@ -242,21 +263,6 @@ class ImportDataController extends Controller {
                                             'country' => $value->country
                                         ];
                                     }
-                                } else {
-                                    $junk_count ++;
-                                    $junk_data_array[] = [
-                                        'linkedin_id' => $value->linkedin_id,
-                                        'linkedin_url' => $value->linkedin_url,
-                                        'company_domain' => $value->company_domain,
-                                        'company_name' => $value->company_name,
-                                        'company_type' => $value->company_type,
-                                        'employee_count_at_linkedin' => $value->employee_count_at_linkedin,
-                                        'industry' => $value->industry,
-                                        'city' => $value->city,
-                                        'postal_code' => $value->postal_code,
-                                        'employee_size' => $value->employee_size,
-                                        'country' => $value->country
-                                    ];
                                 }
                             }
                         }
@@ -294,4 +300,5 @@ class ImportDataController extends Controller {
             }
         }
     }
+
 }
