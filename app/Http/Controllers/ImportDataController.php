@@ -27,32 +27,44 @@ class ImportDataController extends Controller {
                      ->get();
         $estimated_time = $estimated_time->first()->estimated_time;
         $estimated_time = round($estimated_time);
-        if($data->count() > 0){
-            $data_progress = array();
-            $data_progress['Contact Uploading'] = 'disabled';
-            $data_progress['Contact Added'] = 'disabled';
-            $data_progress['Under Processing'] = 'disabled';
-            $data_progress['Completed'] = 'disabled';
-            if($data->first()->Status == 'Contact Uploading'){
-                $data_progress['Contact Uploading'] = 'active';
-            }
-            if($data->first()->Status == 'Contact Added'){
+        $data_progress = array();
+        $completion_progress = array();
+        if($master_user_sheet_data->count() > 0){
+            $data_progress['Contact Uploading'] = '';
+            $data_progress['Contact Added'] = '';
+            $data_progress['Under Processing'] = '';
+            $data_progress['Completed'] = '';
+            $completion_progress['Contact Uploading'] = '';
+            $completion_progress['Contact Added'] = '';
+            $completion_progress['Under Processing'] = '';
+            $completion_progress['Completed'] = '';
+            if($master_user_sheet_data->first()->Status == 'Contact Uploading'){
                 $data_progress['Contact Uploading'] = 'completed';
-                $data_progress['Contact Added'] = 'active';
             }
-            if($data->first()->Status == 'Under Processing'){
+            if($master_user_sheet_data->first()->Status == 'Contact Added'){
+                $completion_progress['Contact Uploading'] = '<i class="fa fa-check-circle"></i>';
                 $data_progress['Contact Uploading'] = 'completed';
                 $data_progress['Contact Added'] = 'completed';
-                $data_progress['Under Processing'] = 'active';
             }
-            if($data->first()->Status == 'Completed'){
+            if($master_user_sheet_data->first()->Status == 'Under Processing'){
+                $completion_progress['Contact Uploading'] = '<i class="fa fa-check-circle"></i>';
+                $completion_progress['Contact Added'] = '<i class="fa fa-check-circle"></i>';
+                $data_progress['Contact Uploading'] = 'completed';
+                $data_progress['Contact Added'] = 'completed';
+                $data_progress['Under Processing'] = 'completed';
+            }
+            if($master_user_sheet_data->first()->Status == 'Completed'){
+                $completion_progress['Contact Uploading'] = '<i class="fa fa-check-circle"></i>';
+                $completion_progress['Contact Added'] = '<i class="fa fa-check-circle"></i>';
+                $completion_progress['Under Processing'] = '<i class="fa fa-check-circle"></i>';
+                $completion_progress['Completed'] = '<i class="fa fa-check-circle"></i>';
                 $data_progress['Contact Uploading'] = 'completed';
                 $data_progress['Contact Added'] = 'completed';
                 $data_progress['Under Processing'] = 'completed';
                 $data_progress['Completed'] = 'completed';
             }
         }
-        return view('importusercontact')->with('estimated_time',$estimated_time)->with('sheet_data', $master_user_sheet_data)->with('hide_download', $hide_download);
+        return view('importusercontact')->with('completion_progress',$completion_progress)->with('data_progress',$data_progress)->with('estimated_time',$estimated_time)->with('sheet_data', $master_user_sheet_data)->with('hide_download', $hide_download);
     }
 
     public function importContactData(Request $request) {

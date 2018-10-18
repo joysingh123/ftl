@@ -76,6 +76,33 @@
         </ul>
     </div>
     @endif
+    @if($sheet_data->first()->download == 'no')
+    <div class="container">
+        <p>Current Sheet Progress</p>
+        <ul class="progress-indicator">
+            <li class="{{$data_progress['Contact Uploading']}}">
+                <span class="bubble"></span>
+                <?php echo $completion_progress['Contact Uploading']; ?>
+                Contact Uploading
+            </li>
+            <li class="{{$data_progress['Contact Added']}}">
+                <span class="bubble"></span>
+                <?php echo $completion_progress['Contact Added']; ?>
+                Contact Added
+            </li>
+            <li class="{{$data_progress['Under Processing']}}">
+                <span class="bubble"></span>
+                <?php echo $completion_progress['Under Processing']; ?>
+                Under Processing
+            </li>
+            <li class="{{$data_progress['Completed']}}">
+                <span class="bubble"></span>
+                <?php echo $completion_progress['Completed']; ?>
+                Completed
+            </li>
+        </ul>
+    </div>
+    @endif
     @if($sheet_data->count() > 0)
 <br>
 <div class="container">
