@@ -76,6 +76,7 @@
         </ul>
     </div>
     @endif
+    @if($sheet_data->count() > 0)
     @if($sheet_data->first()->download == 'no')
     <div class="container">
         <p>Current Sheet Progress</p>
@@ -102,6 +103,7 @@
             </li>
         </ul>
     </div>
+    @endif
     @endif
     @if($sheet_data->count() > 0)
 <br>
