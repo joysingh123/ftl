@@ -18,11 +18,11 @@ class ImportDataController extends Controller {
         $user_id = Auth::id();
         $master_user_sheet_data = MasterUserSheet::where('User_ID', $user_id)->orderBY('created_at', 'DESC')->get();
         $hide_download = false;
-        $data = MasterUserSheet::where('User_ID', $user_id)->where('Status', '!=', 'Completed')->count();
-        if ($data > 0) {
+        $data = MasterUserSheet::where('User_ID', $user_id)->where('Status', '!=', 'Completed')->get();
+        if ($data->count() > 0) {
             $hide_download = true;
         }
-        return view('importusercontact')->with('sheet_data', $master_user_sheet_data)->with('hide_download', $hide_download);
+        return view('importusercontact')->with('current_sheet',$data)->with('sheet_data', $master_user_sheet_data)->with('hide_download', $hide_download);
     }
 
     public function importContactData(Request $request) {
@@ -212,22 +212,24 @@ class ImportDataController extends Controller {
                                             $country = UtilString::clean_string($country);
                                             $contact_exist = CompaniesWithDomain::where('linkedin_id', $linkedin_id)->count();
                                             if ($contact_exist == 0) {
-                                                $insert_array = [
-                                                    'user_id' => Auth::id(),
-                                                    'linkedin_id' => $linkedin_id,
-                                                    'linkedin_url' => $linkedin_url,
-                                                    'company_domain' => $company_domain,
-                                                    'company_name' => $company_name,
-                                                    'company_type' => $company_type,
-                                                    'employee_count_at_linkedin' => $employee_count_at_linkedin,
-                                                    'industry' => $industry,
-                                                    'city' => $city,
-                                                    'postal_code' => $postal_code,
-                                                    'employee_size' => $employee_size,
-                                                    'country' => $country
-                                                ];
-                                                $insert[] = $insert_array;
-                                                $inserted ++;
+                                                if(!empty($linkedin_id)){
+                                                    $insert_array = [
+                                                        'user_id' => Auth::id(),
+                                                        'linkedin_id' => $linkedin_id,
+                                                        'linkedin_url' => $linkedin_url,
+                                                        'company_domain' => $company_domain,
+                                                        'company_name' => $company_name,
+                                                        'company_type' => $company_type,
+                                                        'employee_count_at_linkedin' => $employee_count_at_linkedin,
+                                                        'industry' => $industry,
+                                                        'city' => $city,
+                                                        'postal_code' => $postal_code,
+                                                        'employee_size' => $employee_size,
+                                                        'country' => $country
+                                                    ];
+                                                    $insert[] = $insert_array;
+                                                    $inserted ++;
+                                                }
                                             } else {
                                                 $already_exist_in_db ++;
                                             }
