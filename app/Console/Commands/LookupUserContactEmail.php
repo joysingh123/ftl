@@ -58,6 +58,7 @@ class LookupUserContactEmail extends Command {
                     $contact_id = $md->Contacts_Id;
                     $user_contact_id = $md->User_Contact_Id;
                     $matched_data = MatchedContact::where('contact_id', $contact_id)->get();
+                    echo $matched_data;
                     if ($matched_data->count() > 0) {
                         $matched_email = $matched_data->first()->email;
                         $matched_email_status = $matched_data->first()->email_status;
