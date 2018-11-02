@@ -64,6 +64,7 @@ class SearchEmailForUserSheet extends Command {
                 $found_in_matched_email = 0;
                 $go_to_contact_count = 0;
                 $exist_in_match_but_no_email = 0;
+                $rejected = 0;
                 // serach in available email and matchedcontacts
                 UtilDebug::debug("start email search processing");
                 if ($data_for_email_processing->count() > 0) {
@@ -122,29 +123,35 @@ class SearchEmailForUserSheet extends Command {
                                 if (UtilString::is_empty_string($first_name) && UtilString::is_empty_string($last_name)) {
                                     MasterUserContact::where('ID', $dep->ID)->update(['Email_Status' => 'unknown']);
                                 } else {
-                                    $contact = Contacts::create([
-                                                "user_id" => $user_id,
-                                                "linkedin_id" => $linkedin_id,
-                                                "full_name" => $full_name,
-                                                "first_name" => $first_name,
-                                                "last_name" => $last_name,
-                                                "company_name" => $company_name,
-                                                "job_title" => $job_title,
-                                                "experience" => $experience,
-                                                "profile_link" => $profile_link,
-                                                "location" => $location,
-                                                "status" => $status,
-                                                "process_for_contact_match" => $process_for_contact_match,
-                                    ]);
-                                    if ($contact) {
-                                        $go_to_contact_count ++;
-                                        $exist_in_map = MappingUserContacts::where('User_Contact_Id', $dep->ID)->where('Contacts_Id', $contact->id)->count();
-                                        if ($exist_in_map <= 0) {
-                                            $mapping_contact = MappingUserContacts::create(['Sheet_Id' => $sheet_id, 'User_Contact_Id' => $dep->ID, 'Contacts_Id' => $contact->id, 'Matched_Id' => 0]);
-                                            if ($mapping_contact) {
-                                                MasterUserContact::where('ID', $dep->ID)->update(['Email_Status' => 'under processing']);
+                                    $exist_in_contact =  Contacts::where("first_name",$first_name)->where("last_name",$last_name)->where("company_name",$company_name)->where("job_title",$job_title)->count();
+                                    if($exist_in_contact <= 0){
+                                        $contact = Contacts::create([
+                                                    "user_id" => $user_id,
+                                                    "linkedin_id" => $linkedin_id,
+                                                    "full_name" => $full_name,
+                                                    "first_name" => $first_name,
+                                                    "last_name" => $last_name,
+                                                    "company_name" => $company_name,
+                                                    "job_title" => $job_title,
+                                                    "experience" => $experience,
+                                                    "profile_link" => $profile_link,
+                                                    "location" => $location,
+                                                    "status" => $status,
+                                                    "process_for_contact_match" => $process_for_contact_match,
+                                        ]);
+                                        if ($contact) {
+                                            $go_to_contact_count ++;
+                                            $exist_in_map = MappingUserContacts::where('User_Contact_Id', $dep->ID)->where('Contacts_Id', $contact->id)->count();
+                                            if ($exist_in_map <= 0) {
+                                                $mapping_contact = MappingUserContacts::create(['Sheet_Id' => $sheet_id, 'User_Contact_Id' => $dep->ID, 'Contacts_Id' => $contact->id, 'Matched_Id' => 0]);
+                                                if ($mapping_contact) {
+                                                    MasterUserContact::where('ID', $dep->ID)->update(['Email_Status' => 'under processing']);
+                                                }
                                             }
                                         }
+                                    }else{
+                                        $rejected ++;
+                                        MasterUserContact::where('ID', $dep->ID)->update(['Email_Status' => 'rejected']);
                                     }
                                 }
                             }
@@ -154,7 +161,7 @@ class SearchEmailForUserSheet extends Command {
 //                if($data_for_email_processing_count  == $found_in_matched_email + $exist_in_match_but_no_email){
 //                    MasterUserSheet::where('ID', $sheet_id)->update(['Status'=>'Completed']);
 //                }
-                echo "Domain Found: $data_for_email_processing_count -- Available Email: $found_in_available_email -- Matched: $found_in_matched_email -- Go To Contact: $go_to_contact_count -- Exist In Match But No Email: $exist_in_match_but_no_email";
+                echo "Domain Found: $data_for_email_processing_count -- Available Email: $found_in_available_email -- Matched: $found_in_matched_email -- Go To Contact: $go_to_contact_count -- Exist In Match But No Email: $exist_in_match_but_no_email -- Rejected : $rejected";
                 UtilDebug::debug("end email search processing");
             }
         } else {
