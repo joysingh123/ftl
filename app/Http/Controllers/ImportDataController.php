@@ -11,12 +11,21 @@ use DB;
 use App\MasterUserSheet;
 use App\Helpers\UtilString;
 use App\CompaniesWithDomain;
+use App\MasterUserContact;
 
 class ImportDataController extends Controller {
 
     public function importContactView() {
         $user_id = Auth::id();
         $master_user_sheet_data = MasterUserSheet::where('User_ID', $user_id)->orderBY('created_at', 'DESC')->get();
+        $sheet_stats = DB::table('master_user_contacts')->select(DB::raw("Sheet_ID,Email_Status,Count(Email_Status) AS sheet_stats"))->where('User_ID',$user_id)->groupBy('Sheet_ID')->groupBy('Email_Status')->get();
+        $sheet_stats_array = array();
+        if($sheet_stats->count() > 0){
+            foreach($sheet_stats AS $k=>$ss){
+                $sheet_stats_array[$ss->Sheet_ID][$ss->Email_Status] =  $ss->sheet_stats ;
+            }
+        }
+        //SELECT Sheet_ID,Email_Status,Count(Email_Status) FROM `master_user_contacts` WHERE Sheet_ID = 29 GROUP BY Sheet_ID,Email_Status
         $hide_download = false;
         $data = MasterUserSheet::where('User_ID', $user_id)->where('Status', '!=', 'Completed')->get();
         if ($data->count() > 0) {
@@ -64,7 +73,7 @@ class ImportDataController extends Controller {
                 $data_progress['Completed'] = 'completed';
             }
         }
-        return view('importusercontact')->with('completion_progress',$completion_progress)->with('data_progress',$data_progress)->with('estimated_time',$estimated_time)->with('sheet_data', $master_user_sheet_data)->with('hide_download', $hide_download);
+        return view('importusercontact')->with('completion_progress',$completion_progress)->with('data_progress',$data_progress)->with('estimated_time',$estimated_time)->with('sheet_data', $master_user_sheet_data)->with('hide_download', $hide_download)->with('sheet_stats', $sheet_stats_array);
     }
 
     public function importContactData(Request $request) {
@@ -364,5 +373,39 @@ class ImportDataController extends Controller {
             }
         }
     }
-
+    
+    public function reprocessSheet(Request $request){
+        $response = array();
+        if ($request->id > 0) {
+            $id = $request->id;
+            $sheet_data = MasterUserContact::where('Sheet_Id', $id)->where('Email_Status','domain not found')->distinct()->get(['Company_Linkedin_ID']);
+            if ($sheet_data->count() > 0) {
+                $data_count = $sheet_data->count();
+                $update_exist = false;
+                foreach($sheet_data AS $sd){
+                   $linkedin_id =  $sd['Company_Linkedin_ID'];
+                   $exist = CompaniesWithDomain::where('linkedin_id',$linkedin_id)->count();
+                   if($exist > 0){
+                       MasterUserContact::where('Sheet_Id', $id)->where('Company_Linkedin_ID',$linkedin_id)->update(['Email_Status'=>'domain found']);
+                       $update_exist = true;
+                   }
+                }
+                if($update_exist){
+                    MasterUserSheet::where('Id', $id)->update(['Status'=>'Under Processing']);
+                    $message = "$data_count is in re-processing";
+                    Session::flash('success', $message);
+                }else{
+                    $message = "domain not found for re-processing";
+                    Session::flash('fail', $message);
+                }
+            } else {
+                $message = "no domain found for re - processing";
+                Session::flash('fail', $message);
+            }
+        } else {
+            $message = "invalid request.";
+            Session::flash('fail', $message);
+        }
+        return json_encode($response);
+    }
 }

@@ -17,6 +17,9 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('exportcontactdata/{id}',"ExportController@export")->middleware('auth');
+Route::get('exportcontactdnf/{id}',"ExportController@exportDomainNotFound")->middleware('auth');
+Route::get('exportcontactcnf/{id}',"ExportController@exportCompanyNotFound")->middleware('auth');
+Route::get('reprocesssheet/{id}',"ImportDataController@reprocessSheet")->middleware('auth');
 Route::get('importcontactdata',"ImportDataController@importContactView")->middleware('auth');
 Route::post('importcontactdata',"ImportDataController@importContactData")->name('contactimport')->middleware('auth');
 

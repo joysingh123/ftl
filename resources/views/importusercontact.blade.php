@@ -113,26 +113,50 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Sheet Name</th>
-                <th>Total In Sheet</th>
-                <th>Estimated Completion Time</th>
+                <th>Name</th>
+                <th>Total</th>
+                <th>Processed</th>
+                <th>valid</th>
+                <th>Domain N.F.</th>
+                <th>Company N.F.</th>
+                <th>Time</th>
                 <th>Status</th>
                 <th>Download</th>
+                <th>Re-Process</th>
             </tr>
         </thead>
         <tbody>
             @foreach($sheet_data AS $k=>$sh)
+            
+            <?php 
+            $processed = 0;
+            $valid = 0;
+            $dnf = 0;
+            $cnf = 0;
+            if(isset($sheet_stats[$sh->ID]) && count($sheet_stats[$sh->ID]) > 0){
+                $dnf = (isset($sheet_stats[$sh->ID]['domain not found'])) ? $sheet_stats[$sh->ID]['domain not found'] : 0;
+                $cnf = (isset($sheet_stats[$sh->ID]['company not found'])) ? $sheet_stats[$sh->ID]['company not found'] : 0;
+                $valid = (isset($sheet_stats[$sh->ID]['valid'])) ? $sheet_stats[$sh->ID]['valid'] : 0;
+                $processed = $sh->Total_Count - ($dnf + $cnf);
+            }
+            
+            ?>
             <tr>
                 <td>{{$k+1}}</td>
                 <td>{{$sh->Sheet_Name}}</td>
                 <td>{{$sh->Total_Count}}</td>
+                <td>{{$processed}}</td>
+                <td>{{$valid}} </td>
+                <td>{{$dnf}} <a href="/exportcontactdnf/{{$sh->ID}}"><i class="fa fa-download" aria-hidden="true"></i></a></td>
+                <td>{{$cnf}} <a href="/exportcontactcnf/{{$sh->ID}}"><i class="fa fa-download" aria-hidden="true"></i></a></td>
                 <td><?php echo  \App\Helpers\UtilString::estimated_time($sh->Total_Count, $estimated_time); ?></td>
                 <td>{{$sh->Status}}</td>
                 @if($sh->Status == 'Completed')
                 <td><a href="/exportcontactdata/{{$sh->ID}}">Download</a></td>
                 @else
-                <td>Processing</td>
+                <td>In Progress</td>
                 @endif
+                <td><input type="button" {{($sh->Status != 'Completed') ? 'disabled' : '' }} onclick="reprocesssheet('<?php echo $sh->ID; ?>')" value ='re-process' class="btn btn-primary btn-sm" style="margin-top: 3%;"></td>
             </tr>
             @endforeach
         </tbody>
