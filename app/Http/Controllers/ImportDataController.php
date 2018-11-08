@@ -393,7 +393,7 @@ class ImportDataController extends Controller {
                 }
                 if($update_exist){
                     MasterUserSheet::where('Id', $id)->update(['Status'=>'Under Processing']);
-                    $message = "$data_count is in re-processing";
+                    $message = "$data_count record is in re-processing";
                     Session::flash('success', $message);
                 }else{
                     $message = "domain not found for re-processing";
