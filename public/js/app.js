@@ -3,7 +3,7 @@
    
 function reprocesssheet(sheet_id){
     var txt;
-    var r = confirm("Are u sure You want to reprocess sheet?");
+    var r = confirm("do you want to reprocess the sheet?");
     if (r == true) {
         $.get( "/reprocesssheet/"+sheet_id, function( data ) {
         $( ".result" ).html( data );

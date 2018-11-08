@@ -376,6 +376,7 @@ class ImportDataController extends Controller {
     
     public function reprocessSheet(Request $request){
         $response = array();
+        $message = "";
         if ($request->id > 0) {
             $id = $request->id;
             $sheet_data = MasterUserContact::where('Sheet_Id', $id)->where('Email_Status','domain not found')->distinct()->get(['Company_Linkedin_ID']);
@@ -406,6 +407,6 @@ class ImportDataController extends Controller {
             $message = "invalid request.";
             Session::flash('fail', $message);
         }
-        return json_encode($response);
+        return $message;
     }
 }
