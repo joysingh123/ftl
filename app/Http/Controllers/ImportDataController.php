@@ -385,11 +385,12 @@ class ImportDataController extends Controller {
                 $update_exist = false;
                 foreach($sheet_data AS $sd){
                    $linkedin_id =  $sd['Company_Linkedin_ID'];
-                   $exist = CompaniesWithDomain::where('linkedin_id',$linkedin_id)->count();
-                   if($exist > 0){
-                       MasterUserContact::where('Sheet_Id', $id)->where('Company_Linkedin_ID',$linkedin_id)->update(['Email_Status'=>'domain found']);
+                   $exist = CompaniesWithDomain::where('linkedin_id',$linkedin_id)->get();
+                    if($exist->count() > 0){
+                       $exist_company_domain = $exist->first()->company_domain;
+                       MasterUserContact::where('Sheet_Id', $id)->where('Company_Linkedin_ID',$linkedin_id)->update(['company_domain'=>$exist_company_domain,'Email_Status'=>'domain found']);
                        $update_exist = true;
-                   }
+                    }
                 }
                 if($update_exist){
                     MasterUserSheet::where('Id', $id)->update(['Status'=>'Under Processing']);
