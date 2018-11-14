@@ -236,10 +236,10 @@ class ImportDataController extends Controller {
                             if (UtilString::is_empty_string($value->company_domain) && UtilString::is_empty_string($value->linkedin_id) && UtilString::is_empty_string($value->company_name)) {
                                 
                             } else {
-                                if (in_array($value, $duplicate)) {
+                                if (in_array($value->linkedin_id, $duplicate)) {
                                     $duplicate_in_sheet ++;
                                 } else {
-                                    $duplicate[] = $value;
+                                    $duplicate[] = $value->linkedin_id;
 //                                    if (!UtilString::contains($value, "\u")) {
                                         if ((isset($value->company_domain) && isset($value->linkedin_id)) && UtilString::contains($value->company_domain, ".")) {
                                             $linkedin_id = ($value->linkedin_id != "") ? UtilString::get_company_id_from_url($value->linkedin_id) : 0;
