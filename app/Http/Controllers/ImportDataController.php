@@ -12,6 +12,7 @@ use App\MasterUserSheet;
 use App\Helpers\UtilString;
 use App\CompaniesWithDomain;
 use App\MasterUserContact;
+use App\CompaniesWithoutDomain;
 
 class ImportDataController extends Controller {
 
@@ -240,7 +241,6 @@ class ImportDataController extends Controller {
                                     $duplicate_in_sheet ++;
                                 } else {
                                     $duplicate[] = $value->linkedin_id;
-//                                    if (!UtilString::contains($value, "\u")) {
                                         if ((isset($value->company_domain) && isset($value->linkedin_id)) && UtilString::contains($value->company_domain, ".")) {
                                             $linkedin_id = ($value->linkedin_id != "") ? UtilString::get_company_id_from_url($value->linkedin_id) : 0;
                                             $linkedin_url = ($value->linkedin_url != "") ? $value->linkedin_url : "";
@@ -299,23 +299,20 @@ class ImportDataController extends Controller {
                                                 'employee_size' => $value->employee_size,
                                                 'country' => $value->country
                                             ];
+                                            $company_without_domain = CompaniesWithoutDomain::where('company_name',$value->company_domain)->get();
+                                            if($company_without_domain->count() <= 0){
+                                                $company_d = new CompaniesWithoutDomain();
+                                                $company_d->linkedin_id = (empty($value->linkedin_id)) ? 0 : $value->linkedin_id;
+                                                $company_d->company_domain = $value->company_domain;
+                                                $company_d->company_name = $value->company_name;
+                                                $company_d->employee_count_at_linkedin = $value->employee_count_at_linkedin;
+                                                $company_d->industry = $value->industry;
+                                                $company_d->city = $value->city;
+                                                $company_d->employee_size = $value->employee_size;
+                                                $company_d->country = $value->country;
+                                                $company_d->save();
+                                            }
                                         }
-//                                    } else {
-//                                        $junk_count ++;
-//                                        $junk_data_array[] = [
-//                                            'linkedin_id' => $value->linkedin_id,
-//                                            'linkedin_url' => $value->linkedin_url,
-//                                            'company_domain' => $value->company_domain,
-//                                            'company_name' => $value->company_name,
-//                                            'company_type' => $value->company_type,
-//                                            'employee_count_at_linkedin' => $value->employee_count_at_linkedin,
-//                                            'industry' => $value->industry,
-//                                            'city' => $value->city,
-//                                            'postal_code' => $value->postal_code,
-//                                            'employee_size' => $value->employee_size,
-//                                            'country' => $value->country
-//                                        ];
-//                                    }
                                 }
                             }
                         }
