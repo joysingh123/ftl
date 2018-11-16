@@ -133,6 +133,10 @@ class ImportDataController extends Controller {
                                     if ($company_info->count() > 0) {
                                         $email_status = "domain found";
                                         $company_domain = $company_info->first()->company_domain;
+                                        $valid_email = "$first_name.$last_name@$company_domain";
+                                        if(UtilString::is_email($valid_email)){
+                                            $email_status = "unknown";
+                                        }
                                     } else {
                                         $email_status = "domain not found";
                                     }
@@ -155,14 +159,9 @@ class ImportDataController extends Controller {
                                 if(UtilString::contains($first_name, "(") || UtilString::contains($first_name, ")") || UtilString::contains($last_name, "(") || UtilString::contains($last_name, ")")){
                                     $email_status = "unknown";
                                 }
-                                if(strlen($first_name) == 1 || strlen($last_name) == 1){
+                                if(strlen($first_name) == 1 || strlen($last_name == 1)){
                                     $email_status = "unknown";
                                 }
-                                $valid_email = "$first_name.$last_name@$company_domain";
-                                if(!UtilString::is_email($valid_email)){
-                                    $email_status = "unknown";
-                                }
-
                                 $insert_array = [
                                     'user_id' => Auth::id(),
                                     'sheet_id' => $sheet_id,
