@@ -315,7 +315,8 @@ class ImportDataController extends Controller {
                                             $company_without_domain = CompaniesWithoutDomain::where('company_name',$value->company_domain)->get();
                                             if($company_without_domain->count() <= 0){
                                                 $company_d = new CompaniesWithoutDomain();
-                                                $company_d->linkedin_id = (empty($value->linkedin_id)) ? 0 : $value->linkedin_id;
+                                                $linkedin_id = ($value->linkedin_id != "") ? UtilString::get_company_id_from_url($value->linkedin_id) : 0;
+                                                $company_d->linkedin_id = $linkedin_id;
                                                 $company_d->company_domain = $value->company_domain;
                                                 $company_d->company_name = $value->company_name;
                                                 $company_d->employee_count_at_linkedin = $value->employee_count_at_linkedin;
