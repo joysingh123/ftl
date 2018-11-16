@@ -312,7 +312,7 @@ class ImportDataController extends Controller {
                                                 'employee_size' => $value->employee_size,
                                                 'country' => $value->country
                                             ];
-                                            $company_without_domain = CompaniesWithoutDomain::where('company_name',$value->company_domain)->get();
+                                            $company_without_domain = CompaniesWithoutDomain::where('company_name',$value->company_name)->get();
                                             if($company_without_domain->count() <= 0){
                                                 $company_d = new CompaniesWithoutDomain();
                                                 $linkedin_id = ($value->linkedin_id != "") ? UtilString::get_company_id_from_url($value->linkedin_id) : 0;
