@@ -135,6 +135,8 @@ class ImportDataController extends Controller {
                                         $company_domain = $company_info->first()->company_domain;
                                         $valid_email = "$first_name.$last_name@$company_domain";
                                         if(UtilString::is_email($valid_email)){
+                                            
+                                        }else{
                                             $email_status = "unknown";
                                         }
                                     } else {
