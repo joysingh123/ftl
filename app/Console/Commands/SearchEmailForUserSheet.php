@@ -78,7 +78,14 @@ class SearchEmailForUserSheet extends Command {
                         $update_data = false;
                         if ($available_email->count() > 0) {
                             $found_in_available_email ++;
-                            $update_data = MasterUserContact::where('ID', $dep->ID)->update(['Contact_Email' => $available_email->first()->email, 'Email_Status' => 'valid', 'Validatation_Date' => $available_email->first()->created_at]);
+                            $email_status = 'valid';
+                            $validation_date = $available_email->first()->created_at;
+                            $available_email_status = $available_email->first()->email_status;
+                            if($available_email_status == 'valid' || $available_email_status == 'invalid' || $available_email_status == 'catch all'){
+                                $email_status = $available_email_status;
+                                $validation_date = $available_email->first()->email_validation_date;
+                            }
+                            $update_data = MasterUserContact::where('ID', $dep->ID)->update(['Contact_Email' => $available_email->first()->email, 'Email_Status' => $email_status, 'Validatation_Date' => $validation_date]);
                             if($update_data){
                                 $found_in_available_email ++ ;
                             }
