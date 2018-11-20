@@ -44,7 +44,7 @@ class Kernel extends ConsoleKernel
         });
         
         
-        $schedule->command('lookup:contactemail')->cron('*/3 * * * *')->withoutOverlapping()->before(function () {
+        $schedule->command('lookup:contactemail')->everyFiveMinutes()->withoutOverlapping()->before(function () {
             $cronjobs = CronJobs::where('cron_name', UtilConstant::CRON_LOOKUP_EMAIL_FOR_USER_SHEET)->get();
             $cronjobs->first()->current_status = "Running";
             $cronjobs->first()->save();
