@@ -139,7 +139,7 @@ class SearchEmailForUserSheet1 extends Command
                                 } else {
                                     UtilDebug::debug("Start Fetching From Contact Table");
                                     $exist_in_contact =  Contacts::where("first_name",$first_name)->where("last_name",$last_name)->where("company_name",$company_name)->where("job_title",$job_title)->count();
-                                    UtilDebug::debug("Start Fetching From Contact Table");
+                                    UtilDebug::debug("End Fetching From Contact Table");
                                     if($exist_in_contact <= 0){
                                         $contact = Contacts::create([
                                                     "user_id" => $user_id,
