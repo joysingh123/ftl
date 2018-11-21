@@ -101,6 +101,7 @@ class ImportDataController extends Controller {
                 if (in_array('full_name', $header) && in_array('first_name', $header) && in_array('last_name', $header) && in_array('company', $header) && in_array('company_url', $header) && in_array('title', $header) && in_array('experience', $header) && in_array('location', $header)) {
                     if (!empty($data) && $data->count() < 20000) {
                         $total_count = $data->count();
+                        $exact_count = 0;
                         $master_user_sheet = MasterUserSheet::create(["sheet_name" => $filename, "user_id" => Auth::id(), "total_count" => $total_count, "sheet_tag" => $sheet_tag, "status" => "Contact Uploading"]);
                         $sheet_id = $master_user_sheet->id;
                         if ($sheet_id > 0) {
@@ -115,71 +116,79 @@ class ImportDataController extends Controller {
                                 $experience = trim($value->experience);
                                 $company_url = trim($value->company_url);
                                 $company_linkedin_id = UtilString::get_company_id_from_url($company_url);
-                                $email_status = "contact added";
+                                if(UtilString::is_empty_string($full_name) && UtilString::is_empty_string($first_name) && UtilString::is_empty_string($last_name) && UtilString::is_empty_string($company) && UtilString::is_empty_string($company_url) && UtilString::is_empty_string($job_title)){
+                                    
+                                }else{
+                                    $exact_count ++ ;    
+                                    $email_status = "contact added";
 
-                                //logic for first name and last name
-                                if ($first_name == "" || $last_name == "") {
-                                    $explode_name = explode(" ", $full_name);
-                                    if (count($explode_name) == 1) {
-                                        $first_name = $explode_name[0];
-                                    } else if (count($explode_name) == 2) {
-                                        $first_name = $explode_name[0];
-                                        $last_name = $explode_name[1];
+                                    //logic for first name and last name
+                                    if ($first_name == "" || $last_name == "") {
+                                        $explode_name = explode(" ", $full_name);
+                                        if (count($explode_name) == 1) {
+                                            $first_name = $explode_name[0];
+                                        } else if (count($explode_name) == 2) {
+                                            $first_name = $explode_name[0];
+                                            $last_name = $explode_name[1];
+                                        }
                                     }
-                                }
-                                $company_domain = NULL;
-                                if ($company_linkedin_id > 0) {
-                                    $company_info = CompaniesWithDomain::where('linkedin_id', '=', $company_linkedin_id)->get();
-                                    if ($company_info->count() > 0) {
-                                        $email_status = "domain found";
-                                        $company_domain = $company_info->first()->company_domain;
-                                        $valid_email = "$first_name.$last_name@$company_domain";
-                                        if(UtilString::is_email($valid_email)){
-                                            
-                                        }else{
-                                            $email_status = "unknown";
+                                    $company_domain = NULL;
+                                    if ($company_linkedin_id > 0) {
+                                        $company_info = CompaniesWithDomain::where('linkedin_id', '=', $company_linkedin_id)->get();
+                                        if ($company_info->count() > 0) {
+                                            $email_status = "domain found";
+                                            $company_domain = $company_info->first()->company_domain;
+                                            $valid_email = "$first_name.$last_name@$company_domain";
+                                            if(UtilString::is_email($valid_email)){
+
+                                            }else{
+                                                $email_status = "unknown";
+                                            }
+                                        } else {
+                                            $email_status = "domain not found";
                                         }
                                     } else {
-                                        $email_status = "domain not found";
+                                        $email_status = "company not found";
                                     }
-                                } else {
-                                    $email_status = "company not found";
-                                }
 
-                                $exsting_string = "$first_name$last_name$company_domain";
-                                if (in_array($exsting_string, $duplicate_array)) {
-                                    $email_status = "duplicate";
-                                } else {
-                                    $duplicate_array[] = $exsting_string;
+                                    $exsting_string = "$first_name$last_name$company_domain";
+                                    if (in_array($exsting_string, $duplicate_array)) {
+                                        $email_status = "duplicate";
+                                    } else {
+                                        $duplicate_array[] = $exsting_string;
+                                    }
+                                    if (UtilString::is_empty_string($first_name) && UtilString::is_empty_string($last_name)) {
+                                        $email_status = "unknown";
+                                    }
+                                    if(UtilString::is_empty_string($first_name) && !UtilString::is_empty_string($last_name)){
+                                        $email_status = "unknown";
+                                    }
+                                    if(UtilString::contains($first_name, "(") || UtilString::contains($first_name, ")") || UtilString::contains($last_name, "(") || UtilString::contains($last_name, ")")){
+                                        $email_status = "unknown";
+                                    }
+                                    if(strlen($first_name) == 1 || strlen($last_name == 1)){
+                                        $email_status = "unknown";
+                                    }
+                                    $insert_array = [
+                                        'user_id' => Auth::id(),
+                                        'sheet_id' => $sheet_id,
+                                        'contact_full_name' => $full_name,
+                                        'first_name' => $first_name,
+                                        'last_name' => $last_name,
+                                        'job_title' => $job_title,
+                                        'company_name' => $company,
+                                        'company_url' => $company_url,
+                                        'location' => $location,
+                                        'experience' => $experience,
+                                        'company_linkedin_id' => $company_linkedin_id,
+                                        'email_status' => $email_status,
+                                        'company_domain' => $company_domain
+                                    ];
+                                    $insert[] = $insert_array;
                                 }
-                                if (UtilString::is_empty_string($first_name) && UtilString::is_empty_string($last_name)) {
-                                    $email_status = "unknown";
-                                }
-                                if(UtilString::is_empty_string($first_name) && !UtilString::is_empty_string($last_name)){
-                                    $email_status = "unknown";
-                                }
-                                if(UtilString::contains($first_name, "(") || UtilString::contains($first_name, ")") || UtilString::contains($last_name, "(") || UtilString::contains($last_name, ")")){
-                                    $email_status = "unknown";
-                                }
-                                if(strlen($first_name) == 1 || strlen($last_name == 1)){
-                                    $email_status = "unknown";
-                                }
-                                $insert_array = [
-                                    'user_id' => Auth::id(),
-                                    'sheet_id' => $sheet_id,
-                                    'contact_full_name' => $full_name,
-                                    'first_name' => $first_name,
-                                    'last_name' => $last_name,
-                                    'job_title' => $job_title,
-                                    'company_name' => $company,
-                                    'company_url' => $company_url,
-                                    'location' => $location,
-                                    'experience' => $experience,
-                                    'company_linkedin_id' => $company_linkedin_id,
-                                    'email_status' => $email_status,
-                                    'company_domain' => $company_domain
-                                ];
-                                $insert[] = $insert_array;
+                            }
+                            if($exact_count > 0){
+                                MasterUserSheet::where('ID',$sheet_id)->update(['total_count'=>$exact_count]);
                             }
                             if (!empty($insert)) {
                                 $insert_chunk = array_chunk($insert, 100);
