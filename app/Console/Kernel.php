@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         'App\Console\Commands\SearchEmailForUserSheet',
+        'App\Console\Commands\SearchEmailForUserSheet1',
         'App\Console\Commands\LookupUserContactEmail'
     ];
 
@@ -37,6 +38,22 @@ class Kernel extends ConsoleKernel
             $cronjobs->first()->save();
         })->when(function(){
             $cronjobs = CronJobs::where('cron_name', UtilConstant::CRON_SEARCH_EMAIL_FOR_USER_SHEET)->get();
+            if($cronjobs->first()->is_run == 'yes' && $cronjobs->first()->current_status == "Not Running"){
+                return true;
+            }
+            return false;
+        });
+        
+        $schedule->command('search:emailforusersheet1')->everyFiveMinutes()->withoutOverlapping()->before(function () {
+            $cronjobs = CronJobs::where('cron_name', UtilConstant::CRON_SEARCH_EMAIL_FOR_USER_SHEET_1)->get();
+            $cronjobs->first()->current_status = "Running";
+            $cronjobs->first()->save();
+        })->after(function () {
+            $cronjobs = CronJobs::where('cron_name', UtilConstant::CRON_SEARCH_EMAIL_FOR_USER_SHEET_1)->get();
+            $cronjobs->first()->current_status = "Not Running";
+            $cronjobs->first()->save();
+        })->when(function(){
+            $cronjobs = CronJobs::where('cron_name', UtilConstant::CRON_SEARCH_EMAIL_FOR_USER_SHEET_1)->get();
             if($cronjobs->first()->is_run == 'yes' && $cronjobs->first()->current_status == "Not Running"){
                 return true;
             }

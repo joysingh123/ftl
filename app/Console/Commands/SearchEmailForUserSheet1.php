@@ -12,28 +12,30 @@ use App\AvailableEmail;
 use App\MatchedContact;
 use App\Contacts;
 use App\Emails;
-class SearchEmailForUserSheet extends Command {
 
+class SearchEmailForUserSheet1 extends Command
+{
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'search:emailforusersheet';
+    protected $signature = 'search:emailforusersheet1';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'search email for user uploaded sheet';
+    protected $description = 'Command description';
 
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
     }
 
@@ -42,7 +44,8 @@ class SearchEmailForUserSheet extends Command {
      *
      * @return mixed
      */
-    public function handle() {
+    public function handle()
+    {
         UtilDebug::debug("start processing");
         ini_set('max_execution_time', -1);
         ini_set('memory_limit', -1);
@@ -51,7 +54,7 @@ class SearchEmailForUserSheet extends Command {
         ini_set('mysql.connect_timeout', 600);
         ini_set('default_socket_timeout', 600);
         $response = array();
-        $master_user_sheet = MasterUserSheet::where("Status", "!=", "Completed")->where('priority',0)->get();
+        $master_user_sheet = MasterUserSheet::where("Status", "!=", "Completed")->where('priority','!=',0)->orderBy('priority', 'DESC')->get();
         if ($master_user_sheet->count() > 0) {
             foreach ($master_user_sheet AS $sheet) {
                 $sheet_id = $sheet->ID;
