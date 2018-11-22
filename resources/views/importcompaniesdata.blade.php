@@ -40,7 +40,7 @@
     <form action="{{ route('companyimport') }}" method="POST" enctype="multipart/form-data">
         {{ csrf_field() }}
         Choose your xls File : [
-        Linkedin Id, Linkedin url, Company Domain, Company Name, Company Type, Employee Count at LinkedIN, Industry, City, Postal Code, Employee Size, Country
+        Linkedin Id, Linkedin url, Company Domain, Company Name, Company Type, Employee Count at LinkedIN, Industry, City, Postal Code, Employee Size, Country, State
         ] <input type="file" name="file" class="form-control">
 
         <input type="submit"  class="btn btn-primary btn-lg" style="margin-top: 3%">
@@ -52,7 +52,7 @@
         <ul>
             <li>Excel Sheet Should have column 
                 <span class="excel-column">[
-                    Linkedin Id, Linkedin url, Company Domain, Company Name, Company Type, Employee Count at LinkedIN, Industry, City, Postal Code, Employee Size, Country
+                    Linkedin Id, Linkedin url, Company Domain, Company Name, Company Type, Employee Count at LinkedIN, Industry, City, Postal Code, Employee Size, Country, State
                     ] .
                 </span>
             </li>

@@ -277,6 +277,10 @@ class ImportDataController extends Controller {
                                             $postal_code = ($value->postal_code != "") ? trim($value->postal_code) : "";
                                             $employee_size = ($value->employee_size != "") ? trim($value->employee_size) : "";
                                             $country = ($value->country != "") ? trim($value->country) : "";
+                                            $state = NULL;
+                                            if(isset($value->state)){
+                                                $state = ($value->state != "") ? trim($value->state) : NULL;
+                                            }
                                             $linkedin_url = UtilString::clean_string($linkedin_url);
                                             $company_domain = UtilString::clean_string($company_domain);
                                             $company_domain = UtilString::get_domain_from_url($company_domain);
@@ -285,6 +289,7 @@ class ImportDataController extends Controller {
                                             $city = UtilString::clean_string($city);
                                             $employee_size = UtilString::clean_string($employee_size);
                                             $country = UtilString::clean_string($country);
+                                            $state = UtilString::clean_string($state);
                                             $contact_exist = CompaniesWithDomain::where('linkedin_id', $linkedin_id)->count();
                                             if ($contact_exist == 0) {
                                                 if(!empty($linkedin_id)){
@@ -300,7 +305,8 @@ class ImportDataController extends Controller {
                                                         'city' => $city,
                                                         'postal_code' => $postal_code,
                                                         'employee_size' => $employee_size,
-                                                        'country' => $country
+                                                        'country' => $country,
+                                                        'state' => $state
                                                     ];
                                                     $insert[] = $insert_array;
                                                     $inserted ++;
@@ -335,6 +341,7 @@ class ImportDataController extends Controller {
                                                 $company_d->city = $value->city;
                                                 $company_d->employee_size = $value->employee_size;
                                                 $company_d->country = $value->country;
+                                                $company_d->state = $value->state;
                                                 $company_d->save();
                                             }
                                         }
