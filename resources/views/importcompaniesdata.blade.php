@@ -56,6 +56,12 @@
                     ] .
                 </span>
             </li>
+            <li>Excel Sheet optional column 
+                <span class="excel-column">[
+                    Logo, Facebook Url, Twitter Url, Zoominfo Url
+                    ] .
+                </span>
+            </li>
             <li>Excel Sheet should not have more then one sheet .</li>
             <li>Excel Sheet should have contains max 20,000 records.</li>
         </ul>

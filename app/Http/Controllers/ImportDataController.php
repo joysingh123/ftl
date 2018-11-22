@@ -281,6 +281,11 @@ class ImportDataController extends Controller {
                                             if(isset($value->state)){
                                                 $state = ($value->state != "") ? trim($value->state) : NULL;
                                             }
+                                            $logo_url = ($value->logo != "") ? trim($value->logo) : NULL;
+                                            $facebook_url = ($value->facebook_url != "") ? trim($value->facebook_url) : NULL;
+                                            $twitter_url = ($value->twitter_url != "") ? trim($value->twitter_url) : NULL;
+                                            $zoominfo_url = ($value->zoominfo_url != "") ? trim($value->zoominfo_url) : NULL;
+          
                                             $linkedin_url = UtilString::clean_string($linkedin_url);
                                             $company_domain = UtilString::clean_string($company_domain);
                                             $company_domain = UtilString::get_domain_from_url($company_domain);
@@ -306,7 +311,11 @@ class ImportDataController extends Controller {
                                                         'postal_code' => $postal_code,
                                                         'employee_size' => $employee_size,
                                                         'country' => $country,
-                                                        'state' => $state
+                                                        'state' => $state,
+                                                        'logo_url' => $logo_url,
+                                                        'facebook_url' => $facebook_url,
+                                                        'twitter_url' => $twitter_url,
+                                                        'zoominfo_url' => $zoominfo_url
                                                     ];
                                                     $insert[] = $insert_array;
                                                     $inserted ++;
@@ -342,6 +351,10 @@ class ImportDataController extends Controller {
                                                 $company_d->employee_size = $value->employee_size;
                                                 $company_d->country = $value->country;
                                                 $company_d->state = $value->state;
+                                                $company_d->logo_url = $value->logo;
+                                                $company_d->facebook_url = $value->facebook_url;
+                                                $company_d->twitter_url = $value->twitter_url;
+                                                $company_d->zoominfo_url = $value->zoominfo_url;
                                                 $company_d->save();
                                             }
                                         }
