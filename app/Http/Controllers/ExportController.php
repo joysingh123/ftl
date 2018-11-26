@@ -45,7 +45,7 @@ class ExportController extends Controller {
                 $sheet_name = $sheet_name_array[0];
                 $sheet_id = $sheet_info->first()->ID;
                 $user_id = $sheet_info->first()->User_ID;
-                $data = MasterUserContact::where('User_ID', $user_id)->where('Sheet_ID', $sheet_id)->where('Email_Status', "domain not found")->distinct()->get(["Company_Linkedin_ID AS Linkedin Id", "Company_Url AS Linkedin url","Company_Name AS Company Name"]);
+                $data = MasterUserContact::where('User_ID', $user_id)->where('Sheet_ID', $sheet_id)->where('Email_Status', "domain not found")->distinct()->get(["Company_Url AS Linkedin url","Company_Name AS Company Name"]);
                 $data->each(function ($item, $key) {
                     $item['Company Domain'] = "";
                     $item['Company Type'] = "";
