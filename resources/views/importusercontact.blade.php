@@ -117,6 +117,7 @@
                 <th>Total</th>
                 <th>Processed</th>
                 <th>valid</th>
+                <th>Under Processing</th>
                 <th>Domain N.F.</th>
                 <th>Company N.F.</th>
                 <th>Time</th>
@@ -137,6 +138,7 @@
                 $dnf = (isset($sheet_stats[$sh->ID]['domain not found'])) ? $sheet_stats[$sh->ID]['domain not found'] : 0;
                 $cnf = (isset($sheet_stats[$sh->ID]['company not found'])) ? $sheet_stats[$sh->ID]['company not found'] : 0;
                 $valid = (isset($sheet_stats[$sh->ID]['valid'])) ? $sheet_stats[$sh->ID]['valid'] : 0;
+                $under_p = (isset($sheet_stats[$sh->ID]['Under Processing'])) ? $sheet_stats[$sh->ID]['Under Processing'] : 0;
                 $processed = $sh->Total_Count - ($dnf + $cnf);
             }
             
@@ -146,6 +148,7 @@
                 <td>{{$sh->Sheet_Name}}</td>
                 <td>{{$sh->Total_Count}}</td>
                 <td>{{$processed}}</td>
+                <td>{{$under_p}}</td>
                 <td>{{$valid}} </td>
                 <td>{{$dnf}} <a href="/exportcontactdnf/{{$sh->ID}}"><i class="fa fa-download" aria-hidden="true"></i></a></td>
                 <td>{{$cnf}} <a href="/exportcontactcnf/{{$sh->ID}}"><i class="fa fa-download" aria-hidden="true"></i></a></td>
