@@ -51,7 +51,7 @@
         ] <input type="file" name="file" class="form-control">
         Tag : <input type="text" name="sheet_tag" class="form-control">
 
-        <input type="submit" {{($hide_download) ? 'disabled' : '' }} class="btn btn-primary btn-lg" style="margin-top: 3%">
+        <input type="submit" class="btn btn-primary btn-lg" style="margin-top: 3%">
     </form>
     <br>
     @if($sheet_data->count() <= 0)
