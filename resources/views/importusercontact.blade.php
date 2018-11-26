@@ -156,7 +156,7 @@
                 <td><?php echo  \App\Helpers\UtilString::estimated_time($sh->Total_Count, $estimated_time); ?></td>
                 <td>{{$sh->Status}}</td>
                 @if($sh->Status == 'Completed')
-                <td><a href="/exportcontactdata/{{$sh->ID}}">Download</a></td>
+                <td><a href="/exportcontactdata/{{$sh->ID}}"><i class="fa fa-download" aria-hidden="true"></i></a></td>
                 @else
                 <td>In Progress</td>
                 @endif
