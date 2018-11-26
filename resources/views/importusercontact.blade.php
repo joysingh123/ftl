@@ -138,7 +138,7 @@
                 $dnf = (isset($sheet_stats[$sh->ID]['domain not found'])) ? $sheet_stats[$sh->ID]['domain not found'] : 0;
                 $cnf = (isset($sheet_stats[$sh->ID]['company not found'])) ? $sheet_stats[$sh->ID]['company not found'] : 0;
                 $valid = (isset($sheet_stats[$sh->ID]['valid'])) ? $sheet_stats[$sh->ID]['valid'] : 0;
-                $under_p = (isset($sheet_stats[$sh->ID]['Under Processing'])) ? $sheet_stats[$sh->ID]['Under Processing'] : 0;
+                $under_p = (isset($sheet_stats[$sh->ID]['under processing'])) ? $sheet_stats[$sh->ID]['under processing'] : 0;
                 $processed = $sh->Total_Count - ($dnf + $cnf);
             }
             
