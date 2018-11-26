@@ -108,7 +108,7 @@
     @if($sheet_data->count() > 0)
 <br>
 <div class="container">
-    <h2>Sheet Status</h2>
+    <h2>Sheet Status</h2><span><b>U.P.</b> => Under Processing, <b>D.N.F.</b> => Domain Not Found, <b>C.N.F</b> => Company Not Found</span>
     <table class="table">
         <thead>
             <tr>
@@ -117,9 +117,9 @@
                 <th>Total</th>
                 <th>Processed</th>
                 <th>valid</th>
-                <th>Under Processing</th>
-                <th>Domain N.F.</th>
-                <th>Company N.F.</th>
+                <th>U.P.</th>
+                <th>D.N.F.</th>
+                <th>C.N.F.</th>
                 <th>Time</th>
                 <th>Status</th>
                 <th>Download</th>
