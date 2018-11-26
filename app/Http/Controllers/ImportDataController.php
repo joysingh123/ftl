@@ -452,4 +452,38 @@ class ImportDataController extends Controller {
         }
         return $message;
     }
+    
+    public function markComplete(Request $request){
+        if ($request->id > 0) {
+            $id = $request->id;
+            $sheet_data = MasterUserSheet::where('ID', $id)->update(['Status' => 'Completed']);
+            if($sheet_data){
+                $message = "Sheet Mark AS Completed";
+                Session::flash('success', $message);
+            }else{
+                $message = "something sent wrong";
+                Session::flash('fail', $message);
+            }
+        }else {
+            $message = "invalid request.";
+            Session::flash('fail', $message);
+        }
+    }
+    
+    public function unmarkComplete(Request $request){
+        if ($request->id > 0) {
+            $id = $request->id;
+            $sheet_data = MasterUserSheet::where('ID', $id)->update(['Status' => 'Under Processing']);
+            if($sheet_data){
+                $message = "Sheet Mark AS Under Processing";
+                Session::flash('success', $message);
+            }else{
+                $message = "something sent wrong";
+                Session::flash('fail', $message);
+            }
+        }else {
+            $message = "invalid request.";
+            Session::flash('fail', $message);
+        }
+    }
 }

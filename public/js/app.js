@@ -14,8 +14,34 @@ function reprocesssheet(sheet_id){
     }
     return r;
 }
-   
-   
-   
+
+function  unmarkcomplete(sheet_id){
+    var txt;
+    var r = confirm("Are you sure want to mark as under process the sheet?");
+    if (r == true) {
+        $.get( "/unmarkascomplete/"+sheet_id, function( data ) {
+        $( ".result" ).html( data );
+            window.location.reload();
+        });
+    } else {
+        txt = "You pressed Cancel!";
+    }
+    return r;
+}
+ 
+ 
+function  markcomplete(sheet_id){
+    var txt;
+    var r = confirm("Are you sure want to mark as complete the sheet?");
+    if (r == true) {
+        $.get( "/markascomplete/"+sheet_id, function( data ) {
+        $( ".result" ).html( data );
+            window.location.reload();
+        });
+    } else {
+        txt = "You pressed Cancel!";
+    }
+    return r;
+}
    
    

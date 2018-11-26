@@ -124,6 +124,7 @@
                 <th>Status</th>
                 <th>Download</th>
                 <th>Re-Process</th>
+                <th>Mark Status</th>
             </tr>
         </thead>
         <tbody>
@@ -160,6 +161,13 @@
                 <td>In Progress</td>
                 @endif
                 <td><input type="button" {{($sh->Status != 'Completed') ? 'disabled' : '' }} onclick="reprocesssheet('<?php echo $sh->ID; ?>')" value ='re-process' class="btn btn-primary btn-sm" style="margin-top: 3%;"></td>
+                <td>
+                    @if($sh->Status == 'Completed')
+                        <input type="button" onclick="unmarkcomplete('<?php echo $sh->ID; ?>')" value ='Unmark Complete' class="btn btn-primary btn-sm" style="margin-top: 3%;">
+                    @else
+                        <input type="button" onclick="markcomplete('<?php echo $sh->ID; ?>')" value ='Mark Complete' class="btn btn-primary btn-sm" style="margin-top: 3%;">
+                    @endif
+                </td>
             </tr>
             @endforeach
         </tbody>
