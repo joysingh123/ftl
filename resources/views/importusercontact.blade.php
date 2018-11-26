@@ -148,8 +148,8 @@
                 <td>{{$sh->Sheet_Name}}</td>
                 <td>{{$sh->Total_Count}}</td>
                 <td>{{$processed}}</td>
-                <td>{{$under_p}}</td>
                 <td>{{$valid}} </td>
+                <td>{{$under_p}}</td>
                 <td>{{$dnf}} <a href="/exportcontactdnf/{{$sh->ID}}"><i class="fa fa-download" aria-hidden="true"></i></a></td>
                 <td>{{$cnf}} <a href="/exportcontactcnf/{{$sh->ID}}"><i class="fa fa-download" aria-hidden="true"></i></a></td>
                 <td><?php echo  \App\Helpers\UtilString::estimated_time($sh->Total_Count, $estimated_time); ?></td>
