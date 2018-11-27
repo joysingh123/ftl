@@ -131,7 +131,7 @@ class SearchEmailForUserSheet1 extends Command
                                 $job_title = (empty($job_title)) ? "" : $job_title;
                                 $experience = (empty($dep->Exprience)) ? "" : $dep->Exprience;
                                 $profile_link = "";
-                                $location = (empty($dep->Location)) ? "" : $dep->Location;
+                                $location = (empty($dep->Location)) ? "" : substr(trim($dep->Location), 0, 100);
                                 $status = "valid";
                                 $process_for_contact_match = "not processed";
                                 if (UtilString::is_empty_string($first_name) && UtilString::is_empty_string($last_name)) {
