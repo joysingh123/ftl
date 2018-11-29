@@ -50,6 +50,9 @@ class UtilString {
         }else if(is_numeric($url) && $url > 0){
             $company_id = $url;
         }
+        if((!is_numeric($company_id))){
+            $company_id = 0;
+        }
         return $company_id;
     }
     public static function starts_with($haystack, $needle) {
