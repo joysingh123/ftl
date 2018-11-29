@@ -113,6 +113,7 @@ class ImportDataController extends Controller {
                                 $job_title = trim($value->title);
                                 $company = trim($value->company);
                                 $location = trim($value->location);
+                                $contact_country = (isset($value->contact_country) && !UtilString::is_empty_string($value->contact_country)) ? trim($value->contact_country) : NULL;
                                 $experience = trim($value->experience);
                                 $company_url = trim($value->company_url);
                                 $company_linkedin_id = UtilString::get_company_id_from_url($company_url);
@@ -179,6 +180,7 @@ class ImportDataController extends Controller {
                                         'company_name' => $company,
                                         'company_url' => $company_url,
                                         'location' => $location,
+                                        'contact_country' => $contact_country,
                                         'experience' => $experience,
                                         'company_linkedin_id' => $company_linkedin_id,
                                         'email_status' => $email_status,

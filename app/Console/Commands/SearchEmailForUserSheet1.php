@@ -132,6 +132,7 @@ class SearchEmailForUserSheet1 extends Command
                                 $experience = (empty($dep->Exprience)) ? "" : $dep->Exprience;
                                 $profile_link = "";
                                 $location = (empty($dep->Location)) ? "" : substr(trim($dep->Location), 0, 100);
+                                $contact_country = (empty($dep->Contact_Country)) ? NULL : substr(trim($dep->Contact_Country), 0, 100);
                                 $status = "valid";
                                 $process_for_contact_match = "not processed";
                                 if (UtilString::is_empty_string($first_name) && UtilString::is_empty_string($last_name)) {
@@ -152,6 +153,7 @@ class SearchEmailForUserSheet1 extends Command
                                                     "experience" => $experience,
                                                     "profile_link" => $profile_link,
                                                     "location" => $location,
+                                                    "contact_country" => $contact_country,
                                                     "status" => $status,
                                                     "process_for_contact_match" => $process_for_contact_match,
                                         ]);
