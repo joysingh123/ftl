@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
         'App\Console\Commands\SearchEmailForUserSheet1',
         'App\Console\Commands\LookupUserContactEmail',
         'App\Console\Commands\CreateEmailForDomainImport',
+        'App\Console\Commands\ValidateEmailTraits'
     ];
 
     /**
