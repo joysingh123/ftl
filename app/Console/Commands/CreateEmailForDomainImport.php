@@ -201,7 +201,7 @@ class CreateEmailForDomainImport extends Command
                     }
                 }
                 $process_count_sheet_count = DomainUserContact::where('sheet_id', $sheet_id)->where('status', 'company found')->orWhere('status', 'company not found')->orWhere('status', 'created')->get();
-                if($process_count_sheet_count == 0){
+                if($process_count_sheet_count->count() == 0){
                     DomainSheet::where("id", $sheet_id)->update(['status' => 'Completed']);
                 }
             }
