@@ -45,6 +45,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('companyimport') }}">{{ __('Company Import') }}</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('contactdomainimport') }}">{{ __('Contact With Domain Import') }}</a>
+                            </li>
                         @endguest
                     </ul>
                     <!-- Right Side Of Navbar -->

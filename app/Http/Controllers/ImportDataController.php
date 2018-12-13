@@ -13,7 +13,7 @@ use App\Helpers\UtilString;
 use App\CompaniesWithDomain;
 use App\MasterUserContact;
 use App\CompaniesWithoutDomain;
-
+use App\DomainSheet;
 class ImportDataController extends Controller {
 
     public function importContactView() {
@@ -75,6 +75,151 @@ class ImportDataController extends Controller {
             }
         }
         return view('importusercontact')->with('completion_progress',$completion_progress)->with('data_progress',$data_progress)->with('estimated_time',$estimated_time)->with('sheet_data', $master_user_sheet_data)->with('hide_download', $hide_download)->with('sheet_stats', $sheet_stats_array);
+    }
+    public function importDomainContactView(Request $request){
+        $user_id = Auth::id();
+        $domain_user_sheet_data = DomainSheet::where('User_ID', $user_id)->orderBY('created_at', 'DESC')->get();
+        return view('importuserdomaincontact')->with('sheet_data', $domain_user_sheet_data);
+    }
+    
+    public function importDomainContactData(Request $request){
+        ini_set('max_execution_time', -1);
+        ini_set('memory_limit', -1);
+        ini_set('upload_max_filesize', -1);
+        ini_set('post_max_size ', -1);
+        ini_set('mysql.connect_timeout', 600);
+        ini_set('default_socket_timeout', 600);
+        $this->validate($request, array(
+            'file' => 'required'
+        ));
+        if ($request->hasFile('file')) {
+            $extension = File::extension($request->file->getClientOriginalName());
+            if ($extension == "xlsx" || $extension == "xls") {
+                $path = $request->file->getRealPath();
+                $filename = $request->file->getClientOriginalName();
+                $data = Excel::load($path, function($reader) {})->get();
+                $header = $data->getHeading();
+                if (in_array('first_name', $header) && in_array('last_name', $header) && in_array('domain', $header)) {
+                    if (!empty($data) && $data->count() < 20000) {
+                        $total_count = $data->count();
+                        $exact_count = 0;
+                        $header_json = json_encode($header,true);
+                        $domain_user_sheet = DomainSheet::create(["sheet_name" => $filename, "user_id" => Auth::id(), "total" => $total_count,"sheet_header"=>$header_json, "status" => "Contact Uploading"]);
+                        $sheet_id = $domain_user_sheet->id;
+                        if($sheet_id > 0){
+                            $duplicate_array = array();
+                            foreach ($data as $key => $value) {
+                                $full_name = trim($value->full_name);
+                                $first_name = trim($value->first_name);
+                                $last_name = trim($value->last_name);
+                                $domain = trim($value->domain);
+                                $company = trim($value->company);
+                                $country = trim($value->country);
+                                $industry = trim($value->industry);
+                                $title = trim($value->title);
+                                $location = trim($value->location);
+                                $employee_count = (UtilString::is_empty_string(trim($value->employee_count)) && $value->employee_count > 0) ? trim($value->employee_count) : 0;
+                                if(UtilString::is_empty_string($full_name) && UtilString::is_empty_string($first_name) && UtilString::is_empty_string($last_name) && UtilString::is_empty_string($company) && UtilString::is_empty_string($domain) && UtilString::is_empty_string($title)){
+                                    
+                                }else{
+                                    $exact_count ++;
+                                    $email_status = "contact added";
+                                    if ($first_name == "" || $last_name == "") {
+                                        $explode_name = explode(" ", $full_name);
+                                        if (count($explode_name) == 1) {
+                                            $first_name = $explode_name[0];
+                                        } else if (count($explode_name) == 2) {
+                                            $first_name = $explode_name[0];
+                                            $last_name = $explode_name[1];
+                                        }
+                                    }
+                                    if(UtilString::is_empty_string($first_name) && UtilString::is_empty_string($last_name) && UtilString::is_empty_string($domain)){
+                                        $email_status = "unknown";
+                                    }else{
+                                        if (!UtilString::is_empty_string($domain)) {
+                                            $company_info = CompaniesWithDomain::where('company_domain', '=', $domain)->get();
+                                            if ($company_info->count() > 0) {
+                                                $email_status = "company found";
+                                                $company_domain = $company_info->first()->company_domain;
+                                                $valid_email = "$first_name.$last_name@$company_domain";
+                                                if(UtilString::is_email($valid_email)){
+
+                                                }else{ 
+                                                    $email_status = "unknown";
+                                                }
+                                            } else {
+                                                $email_status = "company not found";
+                                            }
+                                        } else {
+                                            $email_status = "domain not found";
+                                        }
+                                        $exsting_string = "$first_name$last_name$domain";
+                                        if (in_array($exsting_string, $duplicate_array)) {
+                                            $email_status = "duplicate";
+                                        } else {
+                                            $duplicate_array[] = $exsting_string;
+                                        }
+                                        if (UtilString::is_empty_string($first_name) && UtilString::is_empty_string($last_name)) {
+                                            $email_status = "unknown";
+                                        }
+                                        if(UtilString::contains($first_name, "(") || UtilString::contains($first_name, ")") || UtilString::contains($last_name, "(") || UtilString::contains($last_name, ")")){
+                                            $email_status = "unknown";
+                                        }
+                                        if(strlen($first_name) == 1 || strlen($last_name == 1)){
+                                            $email_status = "unknown";
+                                        }
+                                    }
+                                    $insert_array = [
+                                        'user_id' => Auth::id(),
+                                        'sheet_id' => $sheet_id,
+                                        'full_name' => $full_name,
+                                        'first_name' => $first_name,
+                                        'last_name' => $last_name,
+                                        'domain' => $domain,
+                                        'title' => $title,
+                                        'industry' => $industry,
+                                        'company' => $company,
+                                        'location' => $location,
+                                        'employee_count' => $employee_count,
+                                        'country' => $country,
+                                        'status' => $email_status,
+                                    ];
+                                    $insert[] = $insert_array;
+                                    
+                                }
+                            }
+                            if($exact_count > 0){
+                                DomainSheet::where('id',$sheet_id)->update(['total'=>$exact_count]);
+                            }
+                            if (!empty($insert)) {
+                                $insert_chunk = array_chunk($insert, 100);
+                                foreach ($insert_chunk AS $ic) {
+                                    $insertData = DB::table('domain_user_contact')->insert($ic);
+                                }
+                                if ($insertData) {
+                                    Session::flash('success', 'Your Data has successfully imported');
+                                    $domain_user_sheet->status = "Contact Added";
+                                    $domain_user_sheet->save();
+                                    return back();
+                                } else {
+                                    Session::flash('error', 'Error inserting the data..');
+                                    return back();
+                                }
+                            }
+                        } else {
+                            Session::flash('error', 'Error inserting the data..');
+                            return back();
+                        }
+                    } else {
+                        Session::flash('error', "The Sheet contains Only 20,000 records");
+                        return back();
+                    }
+                } else {
+                    Session::flash('error', "The Sheet Header contain wrong column name");
+                    return back();
+                }
+            }
+        }
     }
 
     public function importContactData(Request $request) {
