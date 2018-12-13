@@ -18,7 +18,8 @@ trait ValidateEmailTraits {
             $email_validation_status = array(
                                             'email_status'=>$exist_in_email_validation->first()->status,
                                             'verified_by'=>$exist_in_email_validation->first()->verified_by,
-                                            'response'=>$exist_in_email_validation->first()->raw_data
+                                            'response'=>$exist_in_email_validation->first()->raw_data,
+                                            'validation_date'=>$exist_in_email_validation->first()->created_at
             );
             return $email_validation_status;
         }
@@ -30,7 +31,7 @@ trait ValidateEmailTraits {
             $url = $email_validation_url['email_validation_url'];
             $response = Curl::to($url)->get();
             echo "$url:". $response;
-            $email_validation_status = array('email_status'=>"",'verified_by'=>$api_name,'response'=>$response);
+            $email_validation_status = array('email_status'=>"",'verified_by'=>$api_name,'response'=>$response,"validation_date"=>"");
             $response_array = json_decode($response, true);
             if (isset($response_array['email']) || isset($response_array['address'])) {
                 $email_status = "";
@@ -70,6 +71,7 @@ trait ValidateEmailTraits {
                         $email_validation->score = $response_array['score'];
                     }
                     $email_added = $email_validation->save();
+                    $email_validation_status['validation_date'] = $email_validation->created_at;
                 }
                 break;
             }

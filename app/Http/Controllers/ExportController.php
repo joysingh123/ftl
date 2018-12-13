@@ -9,6 +9,9 @@ use App\DomainSheet;
 use App\DomainUserContact;
 use Excel;
 use DB;
+use App\EmailSheet;
+use App\EmailVerification;
+
 class ExportController extends Controller {
 
     public function export(Request $request) {
@@ -36,7 +39,30 @@ class ExportController extends Controller {
             echo "Invalid Export";
         }
     }
-    
+    public function exportEmail(Request $request) {
+        if ($request->id > 0) {
+            $id = $request->id;
+            $sheet_info = EmailSheet::where('id', $id)->get();
+            if ($sheet_info->count()) {
+                $sheet_name = $sheet_info->first()->sheet_name;
+                $sheet_name_array = explode(".",$sheet_name);
+                $sheet_name = $sheet_name_array[0];
+                $sheet_id = $sheet_info->first()->id;
+                $user_id = $sheet_info->first()->user_id;
+                $data = EmailVerification::where('user_id', $user_id)->where('sheet_id', $sheet_id)->get(['email AS Email','email_validation_date AS Email Validation Date','status AS Status']);
+                $type = $sheet_name_array[1];
+                return Excel::create($sheet_name, function($excel) use ($data) {
+                            $excel->sheet('mySheet', function($sheet) use ($data) {
+                                $sheet->fromArray($data);
+                            });
+                        })->download($type);
+            } else {
+                echo "Invalid Export";
+            }
+        } else {
+            echo "Invalid Export";
+        }
+    }
     public function exportDomain(Request $request){
         if ($request->id > 0) {
             $id = $request->id;

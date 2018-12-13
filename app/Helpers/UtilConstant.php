@@ -36,6 +36,7 @@ class UtilConstant {
     const CRON_LOOKUP_EMAIL_FOR_USER_SHEET = "Lookup Email For User Sheet";
     const CRON_CREATE_EMAIL_FOR_DOMAIN_USER_SHEET = "Create Email For Domain User Sheet";
     const CRON_VALIDATE_EMAIL_FOR_DOMAIN_USER_SHEET = "Create Validate For Domain User Sheet";
+    const CRON_VALIDATE_EMAIL_FOR_EMAIL_SHEET = "Validate Email For Email Sheet";
     
     const EMAIL_VALIDATION_API_MAILBOXLAYER_NAME = "mailboxlayer";
     const EMAIL_VALIDATION_API_ZEROBOUNCE_NAME = "zerobounce";

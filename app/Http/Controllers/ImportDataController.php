@@ -15,7 +15,31 @@ use App\MasterUserContact;
 use App\CompaniesWithoutDomain;
 use App\DomainSheet;
 use App\DomainUserContact;
+use App\EmailSheet;
+use App\EmailVerification;
+
 class ImportDataController extends Controller {
+
+    
+    public function importEmailView(){
+        $user_id = Auth::id();
+        $email_sheet = EmailSheet::where('user_id', $user_id)->orderBY('created_at', 'DESC')->get();
+        $sheet_stats = array();
+        foreach ($email_sheet AS $sd){
+            $total = EmailVerification::where('sheet_id',$sd->first()->id)->count();
+            $valid = EmailVerification::where('sheet_id',$sd->first()->id)->where('status','valid')->count();
+            $invalid = EmailVerification::where('sheet_id',$sd->first()->id)->where('status','invalid')->count();
+            $catch_all = EmailVerification::where('sheet_id',$sd->first()->id)->where('status','catch all')->count();
+            $duplicate = EmailVerification::where('sheet_id',$sd->first()->id)->where('status','duplicate')->count();
+            $data = array();
+            $data['valid'] = $valid;
+            $data['invalid'] = $invalid;
+            $data['catch all'] = $catch_all;
+            $data['duplicate'] = $duplicate;
+            $sheet_stats[$sd->first()->id] = $data;
+        }
+        return view('importemail')->with('sheet_data', $email_sheet)->with('sheet_stats', $sheet_stats);
+    }
 
     public function importContactView() {
         $user_id = Auth::id();
@@ -96,6 +120,91 @@ class ImportDataController extends Controller {
         return view('importuserdomaincontact')->with('sheet_data', $domain_user_sheet_data)->with('sheet_stats', $sheet_stats);
     }
     
+    public function importEmailData(Request $request){
+        ini_set('max_execution_time', -1);
+        ini_set('memory_limit', -1);
+        ini_set('upload_max_filesize', -1);
+        ini_set('post_max_size ', -1);
+        ini_set('mysql.connect_timeout', 600);
+        ini_set('default_socket_timeout', 600);
+        $this->validate($request, array(
+            'file' => 'required'
+        ));
+        if ($request->hasFile('file')) {
+            $extension = File::extension($request->file->getClientOriginalName());
+            if ($extension == "xlsx" || $extension == "xls") {
+                $extension = File::extension($request->file->getClientOriginalName());
+                $path = $request->file->getRealPath();
+                $filename = $request->file->getClientOriginalName();
+                $data = Excel::load($path, function($reader) {})->get();
+                $header = $data->getHeading();
+                if (in_array('email', $header)) {
+                    if (!empty($data) && $data->count() < 20000) {
+                        $total_count = $data->count();
+                        $exact_count = 0;
+                        $header_json = json_encode($header,true);
+                        $email_sheet = EmailSheet::create(["sheet_name" => $filename, "user_id" => Auth::id(), "total" => $total_count,"sheet_header"=>$header_json, "status" => "Email Uploading"]);
+                        $sheet_id = $email_sheet->id;
+                        if($sheet_id > 0){
+                            $duplicate_array = array();
+                            foreach ($data as $key => $value) {
+                                $email = $value->email;
+                                if(UtilString::is_empty_string($email)){
+                                    
+                                }else{
+                                    $exact_count ++;
+                                    $email_status = "unverified";
+                                    if(!UtilString::is_email($email)){
+                                        $email_status = "unknown";
+                                    }
+                                    if (in_array($email, $duplicate_array)) {
+                                        $email_status = "duplicate";
+                                    }else{
+                                        $duplicate_array[] = $email;
+                                    }
+                                    $insert_array = [
+                                        'user_id' => Auth::id(),
+                                        'sheet_id' => $sheet_id,
+                                        'email' => $email,
+                                        'status' => $email_status,
+                                    ];
+                                    $insert[] = $insert_array;
+                                }
+                            }
+                            if($exact_count > 0){
+                                EmailSheet::where('id',$sheet_id)->update(['total'=>$exact_count]);
+                            }
+                            if (!empty($insert)) {
+                                $insert_chunk = array_chunk($insert, 100);
+                                foreach ($insert_chunk AS $ic) {
+                                    $insertData = DB::table('email_verification')->insert($ic);
+                                }
+                                if ($insertData) {
+                                    Session::flash('success', 'Your Data has successfully imported');
+                                    $email_sheet->status = "Email Added";
+                                    $email_sheet->save();
+                                    return back();
+                                } else {
+                                    Session::flash('error', 'Error inserting the data..');
+                                    return back();
+                                }
+                            }
+                        }else {
+                            Session::flash('error', 'Error inserting the data..');
+                            return back();
+                        }
+                    }else {
+                        Session::flash('error', "The Sheet contains Only 20,000 records");
+                        return back();
+                    }
+                }else {
+                    Session::flash('error', "The Sheet Header contain wrong column name");
+                    return back();
+                }
+            }
+        }
+    }
+
     public function importDomainContactData(Request $request){
         ini_set('max_execution_time', -1);
         ini_set('memory_limit', -1);

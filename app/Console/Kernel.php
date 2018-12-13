@@ -19,7 +19,8 @@ class Kernel extends ConsoleKernel
         'App\Console\Commands\SearchEmailForUserSheet1',
         'App\Console\Commands\LookupUserContactEmail',
         'App\Console\Commands\CreateEmailForDomainImport',
-        'App\Console\Commands\ValidateDomainEmail'
+        'App\Console\Commands\ValidateDomainEmail',
+        'App\Console\Commands\ValidateVerificationEmail'
     ];
 
     /**
@@ -105,6 +106,22 @@ class Kernel extends ConsoleKernel
             $cronjobs->first()->save();
         })->when(function(){
             $cronjobs = CronJobs::where('cron_name', UtilConstant::CRON_VALIDATE_EMAIL_FOR_DOMAIN_USER_SHEET)->get();
+            if($cronjobs->first()->is_run == 'yes' && $cronjobs->first()->current_status == "Not Running"){
+                return true;
+            }
+            return false;
+        });
+        
+        $schedule->command('validate:verificationemail')->everyFiveMinutes()->withoutOverlapping()->before(function () {
+            $cronjobs = CronJobs::where('cron_name', UtilConstant::CRON_VALIDATE_EMAIL_FOR_EMAIL_SHEET)->get();
+            $cronjobs->first()->current_status = "Running";
+            $cronjobs->first()->save();
+        })->after(function () {
+            $cronjobs = CronJobs::where('cron_name', UtilConstant::CRON_VALIDATE_EMAIL_FOR_EMAIL_SHEET)->get();
+            $cronjobs->first()->current_status = "Not Running";
+            $cronjobs->first()->save();
+        })->when(function(){
+            $cronjobs = CronJobs::where('cron_name', UtilConstant::CRON_VALIDATE_EMAIL_FOR_EMAIL_SHEET)->get();
             if($cronjobs->first()->is_run == 'yes' && $cronjobs->first()->current_status == "Not Running"){
                 return true;
             }
