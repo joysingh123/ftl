@@ -79,6 +79,7 @@
                     <th>Total</th>
                     <th>Processed</th>
                     <th>valid</th>
+                    <th>Under Processing</th>
                     <th>Status</th>
                     <th>Download</th>
                 </tr>
@@ -89,8 +90,9 @@
                     <td>{{$sh->id}}</td>
                     <td>{{$sh->sheet_name}}</td>
                     <td>{{$sh->total}}</td>
-                    <td>0</td>
-                    <td>0</td>
+                    <td>{{$sheet_stats[$sh->id]['processed']}}</td>
+                    <td>{{$sheet_stats[$sh->id]['valid']}}</td>
+                    <td>{{$sheet_stats[$sh->id]['under processing']}}</td>
                     <td>{{$sh->status}}</td>
                     @if($sh->status == 'Completed')
                         <td><a href="/exportdomaincontactdata/{{$sh->id}}"><i class="fa fa-download" aria-hidden="true"></i></a></td>

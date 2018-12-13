@@ -14,6 +14,7 @@ use App\CompaniesWithDomain;
 use App\MasterUserContact;
 use App\CompaniesWithoutDomain;
 use App\DomainSheet;
+use App\DomainUserContact;
 class ImportDataController extends Controller {
 
     public function importContactView() {
@@ -79,7 +80,20 @@ class ImportDataController extends Controller {
     public function importDomainContactView(Request $request){
         $user_id = Auth::id();
         $domain_user_sheet_data = DomainSheet::where('User_ID', $user_id)->orderBY('created_at', 'DESC')->get();
-        return view('importuserdomaincontact')->with('sheet_data', $domain_user_sheet_data);
+        $sheet_stats = array();
+        foreach ($domain_user_sheet_data AS $sd){
+            $total = DomainUserContact::where('sheet_id',$sd->first()->id)->count();
+            $company_found = DomainUserContact::where('sheet_id',$sd->first()->id)->where('status','company found')->count();
+            $company_not_found = DomainUserContact::where('sheet_id',$sd->first()->id)->where('status','company not found')->count();
+            $email_created = DomainUserContact::where('sheet_id',$sd->first()->id)->where('status','created')->count();
+            $valid = DomainUserContact::where('sheet_id',$sd->first()->id)->where('status','valid')->count();
+            $data = array();
+            $data['processed'] = $total - ($company_found + $company_not_found + $email_created);
+            $data['under processing'] = $company_found + $company_not_found + $email_created;
+            $data['valid'] = $valid;
+            $sheet_stats[$sd->first()->id] = $data;
+        }
+        return view('importuserdomaincontact')->with('sheet_data', $domain_user_sheet_data)->with('sheet_stats', $sheet_stats);
     }
     
     public function importDomainContactData(Request $request){
