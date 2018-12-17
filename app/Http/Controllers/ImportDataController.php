@@ -36,7 +36,7 @@ class ImportDataController extends Controller {
             $data['invalid'] = $invalid;
             $data['catch all'] = $catch_all;
             $data['duplicate'] = $duplicate;
-            $sheet_stats[$sd->first()->id] = $data;
+            $sheet_stats[$sd->id] = $data;
         }
         return view('importemail')->with('sheet_data', $email_sheet)->with('sheet_stats', $sheet_stats);
     }
@@ -115,9 +115,9 @@ class ImportDataController extends Controller {
             $data['processed'] = $total - ($company_found + $company_not_found + $email_created);
             $data['under processing'] = $company_found + $company_not_found + $email_created;
             $data['valid'] = $valid;
-            $sheet_stats[$sd->first()->id] = $data;
+            $sheet_stats[$sd->id] = $data;
         }
-        return view('importuserdomaincontact')->with('sheet_data', $domain_user_sheet_data)->with('sheet_stats', $sheet_stats);
+       return view('importuserdomaincontact')->with('sheet_data', $domain_user_sheet_data)->with('sheet_stats', $sheet_stats);
     }
     
     public function importEmailData(Request $request){
