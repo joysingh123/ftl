@@ -235,7 +235,7 @@ class ImportDataController extends Controller {
                                 $full_name = trim($value->full_name);
                                 $first_name = trim($value->first_name);
                                 $last_name = trim($value->last_name);
-                                $domain = trim($value->domain);
+                                $domain = UtilString::get_domain_from_url(trim($value->domain));
                                 $company = trim($value->company);
                                 $country = trim($value->country);
                                 $industry = trim($value->industry);
