@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('search:emailforusersheet')->everyFiveMinutes()->withoutOverlapping()->before(function () {
+        $schedule->command('search:emailforusersheet')->cron('*/2 * * * *')->withoutOverlapping()->before(function () {
             $cronjobs = CronJobs::where('cron_name', UtilConstant::CRON_SEARCH_EMAIL_FOR_USER_SHEET)->get();
             $cronjobs->first()->current_status = "Running";
             $cronjobs->first()->save();
