@@ -26,11 +26,11 @@ class ImportDataController extends Controller {
         $email_sheet = EmailSheet::where('user_id', $user_id)->orderBY('created_at', 'DESC')->get();
         $sheet_stats = array();
         foreach ($email_sheet AS $sd){
-            $total = EmailVerification::where('sheet_id',$sd->first()->id)->count();
-            $valid = EmailVerification::where('sheet_id',$sd->first()->id)->where('status','valid')->count();
-            $invalid = EmailVerification::where('sheet_id',$sd->first()->id)->where('status','invalid')->count();
-            $catch_all = EmailVerification::where('sheet_id',$sd->first()->id)->where('status','catch all')->count();
-            $duplicate = EmailVerification::where('sheet_id',$sd->first()->id)->where('status','duplicate')->count();
+            $total = EmailVerification::where('sheet_id',$sd->id)->count();
+            $valid = EmailVerification::where('sheet_id',$sd->id)->where('status','valid')->count();
+            $invalid = EmailVerification::where('sheet_id',$sd->id)->where('status','invalid')->count();
+            $catch_all = EmailVerification::where('sheet_id',$sd->id)->where('status','catch all')->count();
+            $duplicate = EmailVerification::where('sheet_id',$sd->id)->where('status','duplicate')->count();
             $data = array();
             $data['valid'] = $valid;
             $data['invalid'] = $invalid;
