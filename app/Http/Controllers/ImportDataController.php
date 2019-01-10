@@ -17,6 +17,7 @@ use App\DomainSheet;
 use App\DomainUserContact;
 use App\EmailSheet;
 use App\EmailVerification;
+use App\CompanyByName;
 
 class ImportDataController extends Controller {
 
@@ -414,10 +415,36 @@ class ImportDataController extends Controller {
                                                 $email_status = "unknown";
                                             }
                                         } else {
-                                            $email_status = "domain not found";
+                                            $company_info_byname = CompanyByName::where('company_name',$company)->get();
+                                            if($company_info_byname->count() > 0){
+                                                $email_status = "domain found";
+                                                $company_domain = $company_info_byname->first()->company_domain;
+                                                $company_linkedin_id = $company_info_byname->first()->linkedin_id;
+                                                $valid_email = "$first_name.$last_name@$company_domain";
+                                                if(UtilString::is_email($valid_email)){
+
+                                                }else{
+                                                    $email_status = "unknown";
+                                                }
+                                            }else{
+                                                $email_status = "domain not found";
+                                            }
                                         }
                                     } else {
-                                        $email_status = "company not found";
+                                        $company_info_byname = CompanyByName::where('company_name',$company)->get();
+                                        if($company_info_byname->count() > 0){
+                                            $email_status = "domain found";
+                                            $company_domain = $company_info_byname->first()->company_domain;
+                                            $company_linkedin_id = $company_info_byname->first()->linkedin_id;
+                                            $valid_email = "$first_name.$last_name@$company_domain";
+                                            if(UtilString::is_email($valid_email)){
+
+                                            }else{
+                                                $email_status = "unknown";
+                                            }
+                                        }else{
+                                            $email_status = "company not found";
+                                        }
                                     }
 
                                     $exsting_string = "$first_name$last_name$company_domain";
