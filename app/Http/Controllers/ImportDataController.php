@@ -107,11 +107,11 @@ class ImportDataController extends Controller {
         $domain_user_sheet_data = DomainSheet::where('User_ID', $user_id)->orderBY('created_at', 'DESC')->get();
         $sheet_stats = array();
         foreach ($domain_user_sheet_data AS $sd){
-            $total = DomainUserContact::where('sheet_id',$sd->first()->id)->count();
-            $company_found = DomainUserContact::where('sheet_id',$sd->first()->id)->where('status','company found')->count();
-            $company_not_found = DomainUserContact::where('sheet_id',$sd->first()->id)->where('status','company not found')->count();
-            $email_created = DomainUserContact::where('sheet_id',$sd->first()->id)->where('status','created')->count();
-            $valid = DomainUserContact::where('sheet_id',$sd->first()->id)->where('status','valid')->count();
+            $total = DomainUserContact::where('sheet_id',$sd->id)->count();
+            $company_found = DomainUserContact::where('sheet_id',$sd->id)->where('status','company found')->count();
+            $company_not_found = DomainUserContact::where('sheet_id',$sd->id)->where('status','company not found')->count();
+            $email_created = DomainUserContact::where('sheet_id',$sd->id)->where('status','created')->count();
+            $valid = DomainUserContact::where('sheet_id',$sd->id)->where('status','valid')->count();
             $data = array();
             $data['processed'] = $total - ($company_found + $company_not_found + $email_created);
             $data['under processing'] = $company_found + $company_not_found + $email_created;
