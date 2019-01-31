@@ -52,7 +52,7 @@ class ValidateDomainEmail extends Command
         ini_set('post_max_size ', -1);
         ini_set('mysql.connect_timeout', 600);
         ini_set('default_socket_timeout', 600);
-        $limit = 1;
+        $limit = 250;
         $emails = DB::table('domain_emails')
                         ->select('domain_user_contact_id', DB::raw("group_concat(email) AS emails"))
                         ->groupBy('domain_user_contact_id')
