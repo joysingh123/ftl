@@ -10,8 +10,7 @@ use App\Helpers\UtilString;
 
 trait ValidateEmailTraits {
     
-    public function validateEmail($email) {
-        $validation_api = EmailValidationApi::where('status','enable')->get();
+    public function validateEmail($email,$validation_api) {
         $email_validation_status = array();
         $exist_in_email_validation = EmailValidation::where('email',$email)->get();
         if($exist_in_email_validation->count() > 0){
@@ -23,10 +22,10 @@ trait ValidateEmailTraits {
             );
             return $email_validation_status;
         }
-        foreach ($validation_api AS $va) {
-            $api_name = $va->name;
-            $api_url = $va->api_url;
-            $api_key = $va->api_key;
+//        foreach ($validation_api AS $va) {
+            $api_name = $validation_api->name;
+            $api_url = $validation_api->api_url;
+            $api_key = $validation_api->api_key;
             $email_validation_url = UtilEmailValidation::getValidationUrl($email, $api_name, $api_url, $api_key);
             $url = $email_validation_url['email_validation_url'];
             $response = Curl::to($url)->get();
@@ -73,9 +72,8 @@ trait ValidateEmailTraits {
                     $email_added = $email_validation->save();
                     $email_validation_status['validation_date'] = $email_validation->created_at;
                 }
-                break;
             }
-        }
+//        }
         return $email_validation_status;
     }
 }
