@@ -84,6 +84,7 @@ class ValidateDomainEmail extends Command
                         $is_valid = false;
                         foreach ($emails_array AS $email) {
                             $v_response = $this->validateEmail($email,$validation_api);
+                            print_r($v_response);
                             $email_status = $v_response['email_status'];
                             $email_validation_date = date("Y-m-d H:i:s");
                             if ($email_status == 'valid'){
