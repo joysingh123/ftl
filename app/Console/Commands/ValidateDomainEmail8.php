@@ -11,8 +11,7 @@ use App\DomainEmail;
 use App\DomainUserContact;
 use DB;
 use App\Traits\ValidateEmailTraits;
-
-class ValidateDomainEmail4 extends Command
+class ValidateDomainEmail8 extends Command
 {
     use ValidateEmailTraits;
     /**
@@ -20,7 +19,7 @@ class ValidateDomainEmail4 extends Command
      *
      * @var string
      */
-    protected $signature = 'validate:email4';
+    protected $signature = 'validate:email8';
 
     /**
      * The console command description.
@@ -63,7 +62,7 @@ class ValidateDomainEmail4 extends Command
         if ($emails->count() > 0) {
             $plucked_email = $emails->pluck('domain_user_contact_id');
             $plucked_email_array = $plucked_email->all();
-            $result = DomainEmail::whereIn('domain_user_contact_id', $plucked_email_array)->update(['status' => 'cron4']);
+            $result = DomainEmail::whereIn('domain_user_contact_id', $plucked_email_array)->update(['status' => 'cron8']);
             $validation_api = EmailValidationApi::where('active','yes')->where('status','enable')->orderBy('cron_count','ASC')->get();
             if($validation_api->count() > 0){
                 $validation_api = $validation_api->first();
@@ -98,7 +97,7 @@ class ValidateDomainEmail4 extends Command
                             if($email_status == ""){
                                 $response_api_array = json_decode($v_response['response'],TRUE);
                                 if(isset($response_api_array['error']) && $response_api_array['error']['code'] == 104){
-                                    DomainEmail::where('status', 'cron4')->orWhere('email',$email)->update(['status' => 'unverified']);
+                                    DomainEmail::where('status', 'cron8')->orWhere('email',$email)->update(['status' => 'unverified']);
                                     $validation_api->active = 'No';
                                     break 2;
                                 }
