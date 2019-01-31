@@ -95,7 +95,7 @@ class ValidateDomainEmail2 extends Command
                                 }
                                 break;
                             }
-                            if($email_status = ""){
+                            if($email_status == ""){
                                 $response_api_array = json_decode($v_response['response'],TRUE);
                                 if(isset($response_api_array['error']) && $response_api_array['error']['code'] == 104){
                                     DomainEmail::where('status', 'cron2')->orWhere('email',$email)->update(['status' => 'unverified']);

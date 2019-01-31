@@ -52,7 +52,7 @@ class ValidateDomainEmail extends Command
         ini_set('post_max_size ', -1);
         ini_set('mysql.connect_timeout', 600);
         ini_set('default_socket_timeout', 600);
-        $limit = 250;
+        $limit = 1;
         $emails = DB::table('domain_emails')
                         ->select('domain_user_contact_id', DB::raw("group_concat(email) AS emails"))
                         ->groupBy('domain_user_contact_id')
@@ -95,7 +95,7 @@ class ValidateDomainEmail extends Command
                                 }
                                 break;
                             }
-                            if($email_status = ""){
+                            if($email_status == ""){
                                 $response_api_array = json_decode($v_response['response'],TRUE);
                                 if(isset($response_api_array['error']) && $response_api_array['error']['code'] == 104){
                                     DomainEmail::where('status', 'cron')->orWhere('email',$email)->update(['status' => 'unverified']);
