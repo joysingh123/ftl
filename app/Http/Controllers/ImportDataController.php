@@ -289,6 +289,9 @@ class ImportDataController extends Controller {
                                         if(UtilString::contains($first_name, "(") || UtilString::contains($first_name, ")") || UtilString::contains($last_name, "(") || UtilString::contains($last_name, ")")){
                                             $email_status = "unknown";
                                         }
+                                        if(UtilString::contains($first_name, "#") || UtilString::contains($last_name, "#")){
+                                            $email_status = "unknown";
+                                        }
                                         if(strlen($first_name) == 1 || strlen($last_name == 1)){
                                             $email_status = "unknown";
                                         }
@@ -460,6 +463,9 @@ class ImportDataController extends Controller {
                                         $email_status = "unknown";
                                     }
                                     if(UtilString::contains($first_name, "(") || UtilString::contains($first_name, ")") || UtilString::contains($last_name, "(") || UtilString::contains($last_name, ")")){
+                                        $email_status = "unknown";
+                                    }
+                                    if(UtilString::contains($first_name, "#") || UtilString::contains($last_name, "#")){
                                         $email_status = "unknown";
                                     }
                                     if(strlen($first_name) == 1 || strlen($last_name == 1)){
