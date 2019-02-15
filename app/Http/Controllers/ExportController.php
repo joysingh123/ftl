@@ -15,6 +15,10 @@ use App\EmailVerification;
 class ExportController extends Controller {
 
     public function export(Request $request) {
+        ini_set('max_execution_time', -1);
+        ini_set('memory_limit', -1);
+        ini_set('mysql.connect_timeout', 600);
+        ini_set('default_socket_timeout', 600);
         if ($request->id > 0) {
             $id = $request->id;
             $sheet_info = MasterUserSheet::where('ID', $id)->get();

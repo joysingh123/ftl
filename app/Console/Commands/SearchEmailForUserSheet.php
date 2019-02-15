@@ -51,7 +51,7 @@ class SearchEmailForUserSheet extends Command {
         ini_set('mysql.connect_timeout', 600);
         ini_set('default_socket_timeout', 600);
         $response = array();
-        $master_user_sheet = MasterUserSheet::where("Status", "!=", "Completed")->where('priority',0)->get();
+        $master_user_sheet = MasterUserSheet::where("Status", "!=", "Completed")->where('priority',0)->orderBy('ID','DESC')->get();
         if ($master_user_sheet->count() > 0) {
             foreach ($master_user_sheet AS $sheet) {
                 $sheet_id = $sheet->ID;
