@@ -34,3 +34,5 @@ Route::post('emailverificationimportdata',"ImportDataController@importEmailData"
 
 Route::get('importcompaniesdata',"ImportDataController@importCompanyView")->middleware('auth');
 Route::post('importcompaniesdata',"ImportDataController@importCompanyData")->name('companyimport')->middleware('auth');
+
+Route:get('getloginuserinfo',"LoginUserInfoController@loginuserinfo")->middleware('auth');
