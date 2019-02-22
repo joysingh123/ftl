@@ -10,7 +10,7 @@ class LoginUserInfoController extends Controller
     public function loginuserinfo(){
         $data = array();
         $data['email'] = Auth::user()->email;
-        $data['id'] = Auth::user()->id;
+        $data['id'] = Auth::id();
         return response()->json($data);
     }
 }
