@@ -118,7 +118,31 @@ return [
     | this array to grant expanded functionality to your applications.
     |
     */
-
+    
+    'debug_blacklist' => [
+        '_ENV' => [
+            'APP_KEY',
+            'DB_PASSWORD',
+            'REDIS_PASSWORD',
+            'MAIL_PASSWORD',
+            'PUSHER_APP_KEY',
+            'PUSHER_APP_SECRET',
+            'DB_PASSWORD_SECOND',
+        ],
+        '_SERVER' => [
+            'APP_KEY',
+            'DB_PASSWORD',
+            'REDIS_PASSWORD',
+            'MAIL_PASSWORD',
+            'PUSHER_APP_KEY',
+            'PUSHER_APP_SECRET',
+            'DB_PASSWORD_SECOND',
+        ],
+        '_POST' => [
+            'password',
+        ],
+    ],
+    
     'providers' => [
 
         /*
