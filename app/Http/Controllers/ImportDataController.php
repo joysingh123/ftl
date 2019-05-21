@@ -43,8 +43,12 @@ class ImportDataController extends Controller {
     }
 
     public function importContactView() {
+        ini_set('max_execution_time', -1);
+        ini_set('memory_limit', -1);
+        ini_set('mysql.connect_timeout', 600);
+        ini_set('default_socket_timeout', 600);
         $user_id = Auth::id();
-        $master_user_sheet_data = MasterUserSheet::where('User_ID', $user_id)->orderBY('created_at', 'DESC')->get();
+        $master_user_sheet_data = MasterUserSheet::where('User_ID', $user_id)->orderBY('created_at', 'DESC')->paginate(10);
         $sheet_stats = DB::table('master_user_contacts')->select(DB::raw("Sheet_ID,Email_Status,Count(Email_Status) AS sheet_stats"))->where('User_ID',$user_id)->groupBy('Sheet_ID')->groupBy('Email_Status')->get();
         $sheet_stats_array = array();
         if($sheet_stats->count() > 0){

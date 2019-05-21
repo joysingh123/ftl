@@ -181,6 +181,8 @@
             @endforeach
         </tbody>
     </table>
+    <br>
+        {{$sheet_data->links()}}
 </div>
 @endif
 </div>
