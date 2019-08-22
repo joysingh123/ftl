@@ -42,6 +42,8 @@ class UtilString {
                 $company_id = str_replace("https://www.linkedin.com/sales/company/", "", $url);
                 $company_id = str_replace("https://www.linkedin.com/company/", "", $company_id);
                 $company_id = str_replace("http://www.linkedin.com/company/", "", $company_id);
+                $company_id = str_replace("http://www.linkedin.com/", "", $company_id);
+                $company_id = str_replace("https://www.linkedin.com/", "", $company_id);
                 $company_id = str_replace("http://www.linkedin.in/company/", "", $company_id);
                 $company_id = str_replace("/", "",$company_id);
                 if(is_numeric($company_id) && $company_id > 0){
