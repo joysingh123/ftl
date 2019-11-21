@@ -59,7 +59,6 @@ class LookupUserContactEmail extends Command {
                         $contact_id = $md->Contacts_Id;
                         $user_contact_id = $md->User_Contact_Id;
                         $matched_data = MatchedContact::where('contact_id', $contact_id)->get();
-                        echo $matched_data;
                         if ($matched_data->count() > 0) {
                             $matched_email = $matched_data->first()->email;
                             $matched_email_status = $matched_data->first()->email_status;
@@ -69,7 +68,7 @@ class LookupUserContactEmail extends Command {
                                 if ($master_user_contacts) {
                                     MappingUserContacts::where('ID', $mapping_id)->update(['Status' => 'processed']);
                                 }
-                            }else if($matched_email_status == 'timeout' || $matched_email_status == 'invalid' || $matched_email_status == 'bounce' || $matched_email_status == 'unrecognized'){
+                            }else if($matched_email_status == 'timeout' || $matched_email_status == 'invalid' || $matched_email_status == 'bounce' || $matched_email_status == 'unrecognized' || $matched_email_status == 'NA'){
                                 $master_user_contacts = MasterUserContact::where('ID', $user_contact_id)->update(["Email_Status" => $matched_email_status, "Validatation_Date" => $matched_email_validation_date]);
                                 if ($master_user_contacts) {
                                     MappingUserContacts::where('ID', $mapping_id)->update(['Status' => 'processed']);
