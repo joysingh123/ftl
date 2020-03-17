@@ -87,6 +87,9 @@ class ExportController extends Controller {
                     if($sh == "first_name"){
                         $sheet_header_array[] = "first_name as First Name";
                     }
+                    if($sh == "title"){
+                        $sheet_header_array[] = "title AS Title";
+                    }
                     if($sh == "last_name"){
                         $sheet_header_array[] = "last_name as Last Name";
                     }
