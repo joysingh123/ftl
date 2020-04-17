@@ -144,6 +144,7 @@
             $valid = 0;
             $dnf = 0;
             $cnf = 0;
+            $under_p = 0;
             if(isset($sheet_stats[$sh->ID]) && count($sheet_stats[$sh->ID]) > 0){
                 $dnf = (isset($sheet_stats[$sh->ID]['domain not found'])) ? $sheet_stats[$sh->ID]['domain not found'] : 0;
                 $cnf = (isset($sheet_stats[$sh->ID]['company not found'])) ? $sheet_stats[$sh->ID]['company not found'] : 0;
